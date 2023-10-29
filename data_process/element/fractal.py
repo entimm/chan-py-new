@@ -1,4 +1,5 @@
 import config
+from data_process import chan_config
 from data_process.element.bar_union import BarUnion
 from data_process.const import FractalType
 
@@ -18,7 +19,7 @@ class Fractal:
         if stroke_len < 4:
             return False
 
-        if config.stroke_check_break:
+        if chan_config.stroke_check_break:
             return not Fractal.check_break(fractal_start, fractal_end)
 
         return True

@@ -2,6 +2,7 @@ import config
 from data_fetch import manager
 from data_process.element.bar import Bar
 from data_process.manager.bar_union_manager import BarUnionManager
+from data_process.manager.segment_manager import SegmentManager
 from data_process.manager.stroke_manager import StrokeManager
 
 
@@ -10,6 +11,7 @@ class Chan:
         self.ticker = ticker
         self.bar_union_manager: BarUnionManager = BarUnionManager()
         self.stroke_manager: StrokeManager = StrokeManager()
+        self.segment_manager: SegmentManager = SegmentManager()
 
     def load(self, start, end):
         stockapi_cls = manager.get_stock_api(config.data_src)
@@ -21,4 +23,6 @@ class Chan:
         new_bar = Bar(kl_data)
         bar_union = self.bar_union_manager.add_bar(new_bar)
         if bar_union is not None:
-            self.stroke_manager.add_fractal(bar_union)
+            stroke = self.stroke_manager.add_fractal(bar_union)
+            if stroke is not None:
+                self.segment_manager.add_stroke(stroke)

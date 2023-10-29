@@ -2,6 +2,7 @@ from flask import Blueprint, render_template
 
 import config
 from data_process.chan import Chan
+from data_process.const import SegmentStatus
 
 data_blueprint = Blueprint('data', __name__)
 
@@ -36,14 +37,25 @@ def get_data():
     } for item in chan.bar_union_manager.fractal_iter()]
 
     stroke_list = [{
+        'name': f'笔{item.index}',
         'is_sure': item.is_ok,
+        'direction': item.direction.name,
         'begin': {'timestamp': item.fractal_start.fractal_time, 'value': item.fractal_start.fractal_value},
         'end': {'timestamp': item.fractal_end.fractal_time, 'value': item.fractal_end.fractal_value},
     } for item in chan.stroke_manager.list]
+
+    segment_list = [{
+        'name': f'段{item.index}',
+        'is_sure': item.status == SegmentStatus.OK,
+        'direction': item.direction.name,
+        'begin': {'timestamp': item.stroke_list[0].fractal_start.fractal_time, 'value': item.stroke_list[0].fractal_start.fractal_value},
+        'end': {'timestamp': item.stroke_list[-1].fractal_end.fractal_time, 'value': item.stroke_list[-1].fractal_end.fractal_value},
+    } for item in chan.segment_manager.list]
 
     data = {'bar_list': bar_list}
     if config.output_union: data['bar_union_list'] = bar_union_list
     if config.output_fractal: data['fractal_list'] = fractal_list
     if config.output_stroke: data['stroke_list'] = stroke_list
+    if config.output_segment: data['segment_list'] = segment_list
 
     return data

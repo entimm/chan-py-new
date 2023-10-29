@@ -84,9 +84,40 @@ chart.setStyles({
         },
     }
 });
-
 klinecharts.registerOverlay({
-    name: 'rect',
+    name: 'chan-segment',
+    lock: true,
+    totalStep: 3,
+    needDefaultPointFigure: false,
+    needDefaultXAxisFigure: true,
+    needDefaultYAxisFigure: true,
+    createPointFigures: ({overlay, coordinates}) => {
+        if (coordinates.length === 2) {
+            return [
+                {
+                    type: 'line',
+                    attrs: {
+                        coordinates: coordinates
+                    },
+                },
+                {
+                    type: 'text',
+                    ignoreEvent: true,
+                    attrs: {
+                        x: (coordinates[0].x + coordinates[1].x)/2,
+                        y: (coordinates[0].y + coordinates[1].y)/2,
+                        text: overlay.extendData ?? '',
+                        align: 'center',
+                        baseline: 'bottom'
+                    },
+                }
+            ]
+        }
+        return []
+    }
+});
+klinecharts.registerOverlay({
+    name: 'chan-rect',
     lock: true,
     totalStep: 3,
     needDefaultPointFigure: false,
@@ -113,7 +144,7 @@ klinecharts.registerOverlay({
     }
 });
 klinecharts.registerOverlay({
-  name: 'betterAnnotation',
+  name: 'chan-annotation',
   totalStep: 2,
   styles: {
     text: {
@@ -161,8 +192,8 @@ fetch(`/data`)
 
     data.bar_union_list?.forEach(function (item) {
         chart.createOverlay({
-            name: 'rect',
-            groupId: 'rect',
+            name: 'chan-rect',
+            groupId: 'chan-rect',
             lock: true,
             points: [item.begin, item.end],
             styles: {
@@ -178,8 +209,8 @@ fetch(`/data`)
 
     data.fractal_list?.forEach(function (item) {
         chart.createOverlay({
-            name: 'betterAnnotation',
-            groupId: 'betterAnnotation',
+            name: 'chan-annotation',
+            groupId: 'chan-annotation',
             extendData: {
                 'direction': item.direction === 'TOP',
                 'text': item.direction === 'TOP' ? '顶' : '底',
@@ -196,9 +227,10 @@ fetch(`/data`)
 
     data.stroke_list?.forEach(function (item) {
         chart.createOverlay({
-            name: 'segment',
-            groupId: 'segment',
+            name: 'chan-segment',
+            groupId: 'chan-segment',
             lock: true,
+            extendData: item.name,
             needDefaultPointFigure: false,
             needDefaultXAxisFigure: false,
             needDefaultYAxisFigure: false,
@@ -209,6 +241,52 @@ fetch(`/data`)
                     style: item.is_sure ? 'solid' : 'dashed',
                     dashedValue: [10, 5],
                     size: 1
+                },
+                text: {
+                    color: '#000',
+                }
+            },
+        });
+    })
+
+    // 特征序列上涨下跌笔按bar的形式显示出来
+    data.stroke_list?.forEach(function (item) {
+        chart.createOverlay({
+            name: 'chan-rect',
+            groupId: 'chan-rect',
+            lock: true,
+            visible: false,
+            points: [item.begin, item.end],
+            styles: {
+                polygon: {
+                    color: item.direction === 'UP' ? 'rgba(232,7,7,0.3)' : 'rgba(10,145,6,0.3)',
+                    borderColor: item.direction === 'UP' ? 'rgba(232,7,7,0.8)' : 'rgba(10,145,6,0.8)',
+                    borderStyle: item.is_sure ? 'solid' : 'dashed',
+                    borderDashedValue: [10, 5],
+                }
+            },
+        });
+    })
+
+    data.segment_list?.forEach(function (item) {
+        chart.createOverlay({
+            name: 'chan-segment',
+            groupId: 'chan-segment',
+            lock: true,
+            extendData: item.name,
+            needDefaultPointFigure: false,
+            needDefaultXAxisFigure: false,
+            needDefaultYAxisFigure: false,
+            points: [item.begin, item.end],
+            styles: {
+                line: {
+                    color: '#de16a5',
+                    style: item.is_sure ? 'solid' : 'dashed',
+                    dashedValue: [10, 5],
+                    size: 2
+                },
+                text: {
+                    color: '#de16a5',
                 }
             },
         });

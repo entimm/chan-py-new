@@ -1,8 +1,8 @@
 from typing import List
 
-import config
-from data_process.element.bar_union import BarUnion
+from data_process import chan_config
 from data_process.const import FractalType
+from data_process.element.bar_union import BarUnion
 from data_process.element.fractal import Fractal
 from data_process.element.stroke import Stroke
 
@@ -10,6 +10,7 @@ from data_process.element.stroke import Stroke
 class StrokeManager:
     def __init__(self):
         self.list: List[Stroke] = []
+        self.drop_list: List[Stroke] = []
 
         # 暂存与第一笔的笔头相反的分型 (辅助纠正第一笔的笔头之用)
         self.first_stroke_header_stash: List[BarUnion] = []
@@ -18,6 +19,7 @@ class StrokeManager:
         """
         投喂分型生成笔
         """
+        print(f'投喂分型给笔: {cur_fractal}')
         if cur_fractal.fractal_type not in [FractalType.TOP, FractalType.BOTTOM]:
             return
 
@@ -31,9 +33,10 @@ class StrokeManager:
         # 如果上一笔长度为0，这时肯定有头无尾
         if self.list[-1].len == 0:
             self.handle_first_stroke(last_stroke, cur_fractal)
-            return
+        else:
+            self.try_make_new_stroke(last_stroke, cur_fractal)
 
-        self.try_make_new_stroke(last_stroke, cur_fractal)
+        return self.list[-1]
 
     def handle_first_stroke(self, last_stroke, cur_fractal):
         """
@@ -60,7 +63,7 @@ class StrokeManager:
         if Fractal.fractal_type_same(last_stroke.fractal_end, cur_fractal):
             if Fractal.same_type_fractal_growing(last_stroke.fractal_end, cur_fractal):
                 # 先判断是否有前面的关键分型，有就处理
-                if config.stroke_fix_sure and last_stroke.stash_fractal is not None:
+                if chan_config.stroke_fix_sure and last_stroke.stash_fractal is not None:
                     self.cancel_last_stroke(last_stroke.stash_fractal)
                     # 尝试生成下一笔
                     self.try_make_new_stroke(self.list[-1], cur_fractal)
@@ -77,14 +80,13 @@ class StrokeManager:
             return
 
         # 落新笔
-        last_stroke.is_ok = True
         self.append(Stroke(last_stroke.fractal_end, cur_fractal))
 
     def try_set_stash_fractal(self, last_stroke, cur_fractal):
         """
         尝试设置暂存的关键分型
         """
-        if not config.stroke_fix_sure: return
+        if not chan_config.stroke_fix_sure: return
         # 检查当前的bar_union和上一笔的笔头，进行高低比较
         if Fractal.fractal_type_same(last_stroke.fractal_start, cur_fractal):
             # 如果比上一笔的笔头higher_or_lower，则暂存当前分型
@@ -96,8 +98,14 @@ class StrokeManager:
                 return
 
     def append(self, stroke: Stroke):
+        print(f'新增笔: {stroke}')
+        if len(self.list) >= 1:
+            self.list[-1].is_ok = True
         self.list.append(stroke)
         stroke.index = len(self.list) - 1
+        if len(self.drop_list) >= 1:
+            if self.drop_list[-1].index == stroke.index:
+                stroke.is_renew = True
 
     def cancel_last_stroke(self, cur_fractal: BarUnion):
         """
@@ -106,7 +114,10 @@ class StrokeManager:
         """
         assert len(self.list) >= 2
 
-        self.list[-2].set_end(cur_fractal)
-        self.list[-2].is_ok = False
         # 截断上根笔
+        print(f'{self.list[-1]}被丢弃')
+        self.drop_list.append(self.list[-1])
         self.list.pop()
+
+        self.list[-1].set_end(cur_fractal)
+        self.list[-1].is_ok = False

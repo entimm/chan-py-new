@@ -16,11 +16,11 @@ class BarUnion:
         # 分型类型
         self.fractal_type = fractal_type
         # 分型时间
-        self.fractal_time = 0
+        self.fractal_time = None
         # 分型值
         self.fractal_value = 0
 
-        self.index = 0
+        self.index = -1
 
         self.next: Optional[BarUnion] = None
 
@@ -65,3 +65,11 @@ class BarUnion:
 
     def is_fractal(self):
         return self.fractal_type in [FractalType.TOP, FractalType.BOTTOM]
+
+    def __str__(self):
+        if self.fractal_type == FractalType.NOTHING:
+            return f'【合K:{self.time_begin}->{self.time_end}】'
+        if self.fractal_type == FractalType.TOP:
+            return f'【顶K:{self.fractal_time}】'
+        if self.fractal_type == FractalType.BOTTOM:
+            return f'【底K:{self.fractal_time}】'
