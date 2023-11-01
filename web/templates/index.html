@@ -36,18 +36,34 @@ chart._chartStore._timeScaleStore.setBarSpaceLimitConfig(0.01, 20)
 chart.createIndicator('VOL')
 chart.createIndicator('MACD')
 chart.setStyles({
+    // 网格线
+    grid: {
+        show: true,
+        horizontal: {
+            show: true,
+            size: 1,
+            color: '#E6E6E6',
+            style: 'solid',
+        },
+        vertical: {
+            show: false,
+            size: 0,
+            color: '#E6E6E6',
+            style: 'solid',
+        }
+    },
     candle: {
         // 蜡烛图类型 'candle_solid'|'candle_stroke'|'candle_up_stroke'|'candle_down_stroke'|'ohlc'|'area'
         type: 'candle_solid',
         bar: {
-            upColor: '#DF484C',
-            downColor: '#459782',
+            upColor: '#F21414',
+            downColor: '#08B536',
             noChangeColor: '#888888',
-            upBorderColor: '#DF484C',
-            downBorderColor: '#459782',
+            upBorderColor: '#F21414',
+            downBorderColor: '#08B536',
             noChangeBorderColor: '#888888',
-            upWickColor: '#DF484C',
-            downWickColor: '#459782',
+            upWickColor: '#F21414',
+            downWickColor: '#08B536',
             noChangeWickColor: '#888888'
         },
     },
@@ -59,8 +75,8 @@ chart.setStyles({
             borderStyle: 'solid',
             borderSize: 1,
             borderDashedValue: [2, 2],
-            upColor: '#ECADA9',
-            downColor: '#A0D1CC',
+            upColor: '#F21414',
+            downColor: '#08B536',
             noChangeColor: '#888888'
         }],
         lastValueMark: {
