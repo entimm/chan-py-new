@@ -24,6 +24,9 @@ class Segment:
 
         self.add_stroke(stroke)
 
+        # 是否确认
+        self.is_ok = False
+
     def add_stroke(self, stroke: Stroke):
         logger.info(f'{self} add_stroke {stroke}')
         if self.len == 0:
@@ -49,6 +52,9 @@ class Segment:
             self.bottom_stroke = front_segment.bottom_stroke
 
         logger.info(f'{self} merge {front_segment}, 合并后尾笔:{self.stroke_list[-1]}')
+
+        self.status = SegmentStatus.MERGE
+        self.is_ok = False
 
     def rebase(self):
         """
@@ -127,4 +133,4 @@ class Segment:
         if len(self.stroke_list) > 0:
             strock_desc = f'{self.stroke_list[0].index}->{self.stroke_list[-1].index}'
 
-        return f"【线段{self.index} 方向 {self.direction.name} 长度{self.len} 笔:{strock_desc}】"
+        return f"【线段{self.index} 方向 {self.direction.name} 长度{self.len} 状态:{self.status.name} 笔:{strock_desc}】"

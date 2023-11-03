@@ -19,8 +19,10 @@ class CompareRelation(Enum):
     CONTAIN = auto()
     CONTAINED = auto()
 
+
 class SegmentStatus(Enum):
     INIT = auto()
     BREAK = auto()
     GROWING = auto()
-    OK = auto()
+    MERGE = auto()
+    SPLIT = auto()

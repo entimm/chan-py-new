@@ -50,7 +50,7 @@ class SegmentManager:
     def append(self, segment: Segment):
         logger.info(f'新增线段: {segment}')
         if len(self.list) >= 1:
-            self.list[-1].status = SegmentStatus.OK
+            self.list[-1].is_ok = True
         self.list.append(segment)
         segment.index = len(self.list) - 1
 
@@ -102,10 +102,13 @@ class SegmentManager:
                 pre_segment.top_stroke = last_segment.top_stroke
             if pre_segment.direction == Direction.DOWN:
                 pre_segment.bottom_stroke = last_segment.bottom_stroke
+            last_segment.status = SegmentStatus.MERGE
+            last_segment.is_ok = False
 
         if len(in_stroke_list) > 0:
             last_segment.stroke_list = in_stroke_list
             last_segment.len = len(in_stroke_list)
+            last_segment.status = SegmentStatus.SPLIT
         else:
             self.list.pop()
 
