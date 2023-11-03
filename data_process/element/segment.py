@@ -6,10 +6,10 @@ from logger import logger
 
 
 class Segment:
-    def __init__(self, stroke: Stroke):
+    def __init__(self, index, stroke: Stroke):
         self.stroke_list: list[Stroke] = []
 
-        self.index = -1
+        self.index = index
 
         self.direction = Direction.INIT
 

@@ -5,7 +5,7 @@ from data_process.const import Direction, FractalType
 
 
 class BarUnion:
-    def __init__(self, bar: Bar, direction=Direction.INIT, fractal_type=FractalType.NOTHING):
+    def __init__(self, index, bar: Bar, direction=Direction.INIT, fractal_type=FractalType.NOTHING):
         self.time_begin = bar.time
         self.time_end = bar.time
         self.high = bar.high
@@ -20,7 +20,7 @@ class BarUnion:
         # 分型值
         self.fractal_value = 0
 
-        self.index = -1
+        self.index = index
 
         self.next: Optional[BarUnion] = None
 

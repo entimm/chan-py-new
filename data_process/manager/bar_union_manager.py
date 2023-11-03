@@ -17,7 +17,7 @@ class BarUnionManager:
         fractal: Optional[BarUnion] = None
 
         if len(self.list) == 0:
-            self.append(BarUnion(new_bar))
+            self.append(BarUnion(len(self.list), new_bar))
         else:
             pre_bar_union = self.list[-1]
             self.try_union(pre_bar_union, new_bar)
@@ -31,7 +31,6 @@ class BarUnionManager:
             self.list[-1].next = bar_union
 
         self.list.append(bar_union)
-        bar_union.index = len(self.list) - 1
 
     def try_union(self, pre_bar_union: BarUnion, cur_bar: Bar):
         """
@@ -45,7 +44,7 @@ class BarUnionManager:
             pre_bar_union.perform_union(cur_bar)
             return
 
-        new_bar_union = BarUnion(cur_bar)
+        new_bar_union = BarUnion(len(self.list), cur_bar)
 
         if pre_bar_union.direction == Direction.UP:
             if compare_relation == CompareRelation.UP:

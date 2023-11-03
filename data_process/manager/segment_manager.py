@@ -15,7 +15,7 @@ class SegmentManager:
         if stroke.len == 0:
             return
         if len(self.list) == 0:
-            self.append(Segment(stroke))
+            self.appendWithStroke(stroke)
             return
 
         last_segment = self.list[-1]
@@ -45,14 +45,15 @@ class SegmentManager:
 
             return
 
-        self.append(Segment(stroke))
+        self.appendWithStroke(stroke)
 
-    def append(self, segment: Segment):
+    def appendWithStroke(self, stroke: Stroke):
+        segment = Segment(len(self.list), stroke)
+
         logger.info(f'新增线段: {segment}')
         if len(self.list) >= 1:
             self.list[-1].is_ok = True
         self.list.append(segment)
-        segment.index = len(self.list) - 1
 
     def handle_break(self, last_segment):
         """

@@ -8,7 +8,7 @@ from logger import logger
 class Stroke:
     direction: Direction
 
-    def __init__(self, fractal_start: BarUnion, fractal_end: Optional[BarUnion]):
+    def __init__(self, index, fractal_start: BarUnion, fractal_end: Optional[BarUnion]):
         # 笔头
         self.fractal_start: BarUnion = fractal_start
         # 笔尾
@@ -20,7 +20,7 @@ class Stroke:
         # 是否确认
         self.is_ok = False
 
-        self.index = -1
+        self.index = index
 
         self.direction = self.cal_direction()
 

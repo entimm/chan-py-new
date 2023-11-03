@@ -26,7 +26,7 @@ class StrokeManager:
 
         if len(self.list) == 0:
             # 用第一个分型第一笔，有头无尾
-            self.append(Stroke(cur_fractal, None))
+            self.append(Stroke(len(self.list), cur_fractal, None))
             return
 
         last_stroke = self.list[-1]
@@ -81,7 +81,7 @@ class StrokeManager:
             return
 
         # 落新笔
-        self.append(Stroke(last_stroke.fractal_end, cur_fractal))
+        self.append(Stroke(len(self.list), last_stroke.fractal_end, cur_fractal))
 
     def try_set_stash_fractal(self, last_stroke, cur_fractal):
         """
@@ -99,14 +99,13 @@ class StrokeManager:
                 return
 
     def append(self, stroke: Stroke):
-        logger.info(f'新增笔: {stroke}')
         if len(self.list) >= 1:
             self.list[-1].is_ok = True
         self.list.append(stroke)
-        stroke.index = len(self.list) - 1
         if len(self.drop_list) >= 1:
             if self.drop_list[-1].index == stroke.index:
                 stroke.is_renew = True
+        logger.info(f'新增笔: {stroke}')
 
     def cancel_last_stroke(self, cur_fractal: BarUnion):
         """
