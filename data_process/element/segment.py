@@ -2,6 +2,7 @@ from typing import Optional
 
 from data_process.const import Direction, SegmentStatus
 from data_process.element.stroke import Stroke
+from logger import logger
 
 
 class Segment:
@@ -24,7 +25,7 @@ class Segment:
         self.add_stroke(stroke)
 
     def add_stroke(self, stroke: Stroke):
-        print(f'{self} add_stroke {stroke}')
+        logger.info(f'{self} add_stroke {stroke}')
         if self.len == 0:
             self.direction = stroke.direction
             self.top_stroke = stroke
@@ -47,7 +48,7 @@ class Segment:
         if front_segment.bottom_stroke.low_fractal().fractal_value <= self.bottom_stroke.low_fractal().fractal_value:
             self.bottom_stroke = front_segment.bottom_stroke
 
-        print(f'{self} merge {front_segment}, 合并后尾笔:{self.stroke_list[-1]}')
+        logger.info(f'{self} merge {front_segment}, 合并后尾笔:{self.stroke_list[-1]}')
 
     def rebase(self):
         """
@@ -61,7 +62,7 @@ class Segment:
 
         self.status = SegmentStatus.INIT
 
-        print(f'{self} rebase, start={self.stroke_list[0]}')
+        logger.info(f'{self} rebase, start={self.stroke_list[0]}')
 
     def append(self, stroke: Stroke):
         self.stroke_list.append(stroke)
@@ -93,20 +94,20 @@ class Segment:
         if self.top_stroke.index != stroke.index:
             if self.direction == Direction.UP:
                 self.status = SegmentStatus.GROWING
-                print(f"{self} 延伸了 {self.top_stroke.high_fractal()} => {stroke.high_fractal()} | {self.top_stroke.index} => {stroke.index}")
+                logger.info(f"{self} 延伸了 {self.top_stroke.high_fractal()} => {stroke.high_fractal()} | {self.top_stroke.index} => {stroke.index}")
             else:
                 self.status = SegmentStatus.BREAK
-                print(f"{self} 破坏了 {self.top_stroke.high_fractal()} => {stroke.high_fractal()} | {self.top_stroke.index} => {stroke.index}")
+                logger.info(f"{self} 破坏了 {self.top_stroke.high_fractal()} => {stroke.high_fractal()} | {self.top_stroke.index} => {stroke.index}")
             self.top_stroke = stroke
 
     def set_bottom_stroke(self, stroke: Stroke):
         if self.bottom_stroke.index != stroke.index:
             if self.direction == Direction.UP:
                 self.status = SegmentStatus.BREAK
-                print(f"{self} 破坏了 {self.bottom_stroke.low_fractal()} => {stroke.low_fractal()} | {self.bottom_stroke.index} => {stroke.index}")
+                logger.info(f"{self} 破坏了 {self.bottom_stroke.low_fractal()} => {stroke.low_fractal()} | {self.bottom_stroke.index} => {stroke.index}")
             else:
                 self.status = SegmentStatus.GROWING
-                print(f"{self} 延伸了 {self.bottom_stroke.low_fractal()} => {stroke.low_fractal()} | {self.bottom_stroke.index} => {stroke.index}")
+                logger.info(f"{self} 延伸了 {self.bottom_stroke.low_fractal()} => {stroke.low_fractal()} | {self.bottom_stroke.index} => {stroke.index}")
             self.bottom_stroke = stroke
 
     def forward_stroke(self):

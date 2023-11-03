@@ -3,6 +3,7 @@ from typing import List
 from data_process.const import SegmentStatus, Direction
 from data_process.element.segment import Segment
 from data_process.element.stroke import Stroke
+from logger import logger
 
 
 class SegmentManager:
@@ -10,7 +11,7 @@ class SegmentManager:
         self.list: List[Segment] = []
 
     def add_stroke(self, stroke: Stroke):
-        print(f'投喂笔给线段 {stroke}')
+        logger.info(f'投喂笔给线段 {stroke}')
         if stroke.len == 0:
             return
         if len(self.list) == 0:
@@ -27,7 +28,7 @@ class SegmentManager:
         由于笔会生长，所以相同的笔会返回进来
         """
         if last_segment.stroke_list[-1].index == stroke.index:
-            print(f'线段同笔更新')
+            logger.info(f'线段同笔更新')
 
             # 笔生长时更新极值点,并可能触发笔破坏
             last_segment.update_vertex(stroke)
@@ -47,7 +48,7 @@ class SegmentManager:
         self.append(Segment(stroke))
 
     def append(self, segment: Segment):
-        print(f'新增线段: {segment}')
+        logger.info(f'新增线段: {segment}')
         if len(self.list) >= 1:
             self.list[-1].status = SegmentStatus.OK
         self.list.append(segment)
@@ -79,13 +80,13 @@ class SegmentManager:
         if pre_segment.direction == Direction.DOWN:
             if last_segment.bottom_stroke.low_fractal().index != pre_segment.bottom_stroke.low_fractal().index and last_segment.bottom_stroke.low_fractal().fractal_value <= pre_segment.bottom_stroke.low_fractal().fractal_value:
                 self.split_then_merge(pre_segment, last_segment, last_segment.bottom_stroke)
-                print(f'after split_then_merge 前{pre_segment} 后{last_segment}')
+                logger.info(f'after split_then_merge 前{pre_segment} 后{last_segment}')
 
     def split_then_merge(self, pre_segment: Segment, last_segment: Segment, stroke: Stroke):
         """
         拆分后进行合并
         """
-        print(f'{pre_segment} split_then_merge {last_segment} 用 {stroke}')
+        logger.info(f'{pre_segment} split_then_merge {last_segment} 用 {stroke}')
         out_stroke_list: list[Stroke] = []
         in_stroke_list: list[Stroke] = []
         for item in last_segment.stroke_list:

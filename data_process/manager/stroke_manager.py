@@ -5,6 +5,7 @@ from data_process.const import FractalType
 from data_process.element.bar_union import BarUnion
 from data_process.element.fractal import Fractal
 from data_process.element.stroke import Stroke
+from logger import logger
 
 
 class StrokeManager:
@@ -19,7 +20,7 @@ class StrokeManager:
         """
         投喂分型生成笔
         """
-        print(f'投喂分型给笔: {cur_fractal}')
+        logger.info(f'投喂分型给笔: {cur_fractal}')
         if cur_fractal.fractal_type not in [FractalType.TOP, FractalType.BOTTOM]:
             return
 
@@ -98,7 +99,7 @@ class StrokeManager:
                 return
 
     def append(self, stroke: Stroke):
-        print(f'新增笔: {stroke}')
+        logger.info(f'新增笔: {stroke}')
         if len(self.list) >= 1:
             self.list[-1].is_ok = True
         self.list.append(stroke)
@@ -115,7 +116,7 @@ class StrokeManager:
         assert len(self.list) >= 2
 
         # 截断上根笔
-        print(f'{self.list[-1]}被丢弃')
+        logger.info(f'{self.list[-1]}被丢弃')
         self.drop_list.append(self.list[-1])
         self.list.pop()
 

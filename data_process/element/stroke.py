@@ -2,6 +2,7 @@ from typing import Optional
 
 from data_process.element.bar_union import BarUnion
 from data_process.const import FractalType, Direction
+from logger import logger
 
 
 class Stroke:
@@ -35,7 +36,7 @@ class Stroke:
         """
         self.fractal_start = cur_fractal
         self.direction = self.cal_direction()
-        print(f'{self}设置笔首{cur_fractal}')
+        logger.info(f'{self}设置笔首{cur_fractal}')
 
     def set_end(self, cur_fractal: Optional[BarUnion]):
         """
@@ -43,7 +44,7 @@ class Stroke:
         """
         self.fractal_end = cur_fractal
         self.len = 0 if cur_fractal is None else cur_fractal.index - self.fractal_start.index
-        print(f'{self}设置笔尾{cur_fractal}')
+        logger.info(f'{self}设置笔尾{cur_fractal}')
 
     def cal_direction(self):
         return Direction.UP if self.fractal_start.fractal_type == FractalType.BOTTOM else Direction.DOWN
