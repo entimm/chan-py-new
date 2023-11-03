@@ -31,8 +31,6 @@ class Segment:
         logger.info(f'{self} add_stroke {stroke}')
         if self.len == 0:
             self.direction = stroke.direction
-            self.top_stroke = stroke
-            self.bottom_stroke = stroke
             self.append(stroke)
             return
 
@@ -74,6 +72,8 @@ class Segment:
         self.stroke_list.append(stroke)
         self.len = len(self.stroke_list)
 
+        self.update_vertex(stroke)
+
     def check_if_add(self, stroke):
         """
         检测是否可以继续新增笔
@@ -91,6 +91,11 @@ class Segment:
         """
         更新极值点
         """
+        if self.len == 1:
+            self.top_stroke = stroke
+            self.bottom_stroke = stroke
+            return
+
         if stroke.high_fractal().index != self.top_stroke.high_fractal().index and stroke.high_fractal().fractal_value >= self.top_stroke.high_fractal().fractal_value:
             self.set_top_stroke(stroke)
         if stroke.low_fractal().index != self.bottom_stroke.low_fractal().index and stroke.low_fractal().fractal_value <= self.bottom_stroke.low_fractal().fractal_value:

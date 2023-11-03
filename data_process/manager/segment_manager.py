@@ -38,9 +38,7 @@ class SegmentManager:
 
         if last_segment.check_if_add(stroke):
             last_segment.add_stroke(stroke)
-
-            # 线段变长后更新极值点,并可能触发笔破坏
-            last_segment.update_vertex(stroke)
+            # 线段长度变更后可能触发笔破坏
             self.handle_break(last_segment)
 
             return

@@ -99,13 +99,13 @@ class StrokeManager:
                 return
 
     def append(self, stroke: Stroke):
+        logger.info(f'新增笔: {stroke}')
         if len(self.list) >= 1:
             self.list[-1].is_ok = True
         self.list.append(stroke)
         if len(self.drop_list) >= 1:
             if self.drop_list[-1].index == stroke.index:
                 stroke.is_renew = True
-        logger.info(f'新增笔: {stroke}')
 
     def cancel_last_stroke(self, cur_fractal: BarUnion):
         """
