@@ -28,7 +28,7 @@ class Stroke:
         self.stash_fractal: Optional[BarUnion] = None
 
         # 是否被丢弃然后重新生成
-        self.is_renew = False
+        self.dropped = False
 
     def set_start(self, cur_fractal: BarUnion):
         """

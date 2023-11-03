@@ -103,9 +103,6 @@ class StrokeManager:
         if len(self.list) >= 1:
             self.list[-1].is_ok = True
         self.list.append(stroke)
-        if len(self.drop_list) >= 1:
-            if self.drop_list[-1].index == stroke.index:
-                stroke.is_renew = True
 
     def cancel_last_stroke(self, cur_fractal: BarUnion):
         """
@@ -117,6 +114,7 @@ class StrokeManager:
         # 截断上根笔
         logger.info(f'{self.list[-1]}被丢弃')
         self.drop_list.append(self.list[-1])
+        self.list[-1].dropped = True
         self.list.pop()
 
         self.list[-1].set_end(cur_fractal)
