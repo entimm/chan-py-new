@@ -2,19 +2,19 @@ import yfinance as yf
 
 import config
 from common.const import DataField, AdjType, PeriodEnum
-from data_fetch.abs_stock_api import AbsStockApi
+from data_fetch.fetcher import Fetcher
 
 
-class YfinanceFetcher(AbsStockApi):
-    def __init__(self, ticker, begin_date=None, end_date=None, period=PeriodEnum.DAY):
-        super(YfinanceFetcher, self).__init__(ticker, begin_date, end_date, period)
+class YfinanceFetcher(Fetcher):
+    def __init__(self, ticker, start, end, period=PeriodEnum.DAY):
+        super(YfinanceFetcher, self).__init__(ticker, start, end, period)
 
     def get_kl_data(self):
         adj_type_dict = {AdjType.QFQ: True, AdjType.HFQ: False, AdjType.NONE: None}
         ticker = yf.Ticker(self.ticker)
         intraday_data = ticker.history(
-            start=self.begin_date,
-            end=self.end_date,
+            start=self.start,
+            end=self.end,
             actions=adj_type_dict[config.adj_type],
             interval=self.__convert_period(),
         )

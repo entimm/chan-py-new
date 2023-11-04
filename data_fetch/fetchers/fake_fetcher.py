@@ -5,12 +5,12 @@ import numpy as np
 
 import config
 from common.const import DataField, PeriodEnum
-from data_fetch.abs_stock_api import AbsStockApi
+from data_fetch.fetcher import Fetcher
 
 
-class FakeFetcher(AbsStockApi):
-    def __init__(self, ticker, begin_date=None, end_date=None, period=PeriodEnum.DAY):
-        super(FakeFetcher, self).__init__(ticker, begin_date, end_date, period)
+class FakeFetcher(Fetcher):
+    def __init__(self, ticker, start, end, period=PeriodEnum.DAY):
+        super(FakeFetcher, self).__init__(ticker, start, end, period)
 
     def get_kl_data(self):
         def start_reach_limit(times=random.randint(1, 20)):

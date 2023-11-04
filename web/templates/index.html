@@ -1,20 +1,23 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="description" content="KLineChart example" />
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <meta name="description" content="KLineChart example"/>
     <title>缠论</title>
     <script type="text/javascript" src="/static/klinecharts.min.js"></script>
+    <script type="text/javascript" src="/static/klinecharts_overlay.js"></script>
     <style>
         html {
             background: #FFFFFF;
             height: 100%;
         }
+
         body {
             margin: 0;
             height: 100%;
         }
+
         #chart {
             height: 100%;
         }
@@ -23,275 +26,136 @@
 <body>
 <div id="chart"></div>
 <script>
-var chart = klinecharts.init('chart', {
+  var chart = klinecharts.init('chart', {
     timezone: 'Asia/Shanghai',
     customApi: {
-        formatDate: function (dateTimeFormat, timestamp, format, type) {
-            return timestamp
-        }
+      formatDate: function (dateTimeFormat, timestamp, format, type) {
+        return timestamp
+      }
     }
-})
-chart._chartStore._timeScaleStore.setBarSpaceLimitConfig(0.01, 20)
-// chart.createIndicator('MA', false, { id: 'candle_pane' })
-chart.createIndicator('VOL')
-chart.createIndicator('MACD')
-chart.setStyles({
+  })
+  chart._chartStore._timeScaleStore.setBarSpaceLimitConfig(0.01, 20)
+  // chart.createIndicator('MA', false, { id: 'candle_pane' })
+  chart.createIndicator('VOL')
+  chart.createIndicator('MACD')
+  chart.setStyles({
     // 网格线
     grid: {
+      show: true,
+      horizontal: {
         show: true,
-        horizontal: {
-            show: true,
-            size: 1,
-            color: '#E6E6E6',
-            style: 'solid',
-        },
-        vertical: {
-            show: false,
-            size: 0,
-            color: '#E6E6E6',
-            style: 'solid',
-        }
+        size: 1,
+        color: '#E6E6E6',
+        style: 'solid',
+      },
+      vertical: {
+        show: false,
+        size: 0,
+        color: '#E6E6E6',
+        style: 'solid',
+      }
     },
     candle: {
-        // 蜡烛图类型 'candle_solid'|'candle_stroke'|'candle_up_stroke'|'candle_down_stroke'|'ohlc'|'area'
-        type: 'candle_solid',
-        bar: {
-            upColor: '#F21414',
-            downColor: '#08B536',
-            noChangeColor: '#888888',
-            upBorderColor: '#F21414',
-            downBorderColor: '#08B536',
-            noChangeBorderColor: '#888888',
-            upWickColor: '#F21414',
-            downWickColor: '#08B536',
-            noChangeWickColor: '#888888'
-        },
+      // 蜡烛图类型 'candle_solid'|'candle_stroke'|'candle_up_stroke'|'candle_down_stroke'|'ohlc'|'area'
+      type: 'candle_solid',
+      bar: {
+        upColor: '#F21414',
+        downColor: '#08B536',
+        noChangeColor: '#888888',
+        upBorderColor: '#F21414',
+        downBorderColor: '#08B536',
+        noChangeBorderColor: '#888888',
+        upWickColor: '#F21414',
+        downWickColor: '#08B536',
+        noChangeWickColor: '#888888'
+      },
     },
     indicator: {
-        bars: [{
-            // 'fill' | 'stroke' | 'stroke_fill'
-            style: 'fill',
-            // 'solid' | 'dashed'
-            borderStyle: 'solid',
-            borderSize: 1,
-            borderDashedValue: [2, 2],
-            upColor: '#F21414',
-            downColor: '#08B536',
-            noChangeColor: '#888888'
-        }],
-        lastValueMark: {
-            show: true,
-        },
-    }
-});
-klinecharts.registerOverlay({
-    name: 'chan-segment',
-    lock: true,
-    totalStep: 3,
-    needDefaultPointFigure: false,
-    needDefaultXAxisFigure: true,
-    needDefaultYAxisFigure: true,
-    createPointFigures: ({overlay, coordinates}) => {
-        if (coordinates.length === 2) {
-            return [
-                {
-                    type: 'line',
-                    attrs: {
-                        coordinates: coordinates
-                    },
-                },
-                {
-                    type: 'text',
-                    ignoreEvent: true,
-                    attrs: {
-                        x: (coordinates[0].x + coordinates[1].x)/2,
-                        y: (coordinates[0].y + coordinates[1].y)/2,
-                        text: overlay.extendData ?? '',
-                        align: 'center',
-                        baseline: 'bottom'
-                    },
-                }
-            ]
-        }
-        return []
-    }
-});
-klinecharts.registerOverlay({
-    name: 'chan-rect',
-    lock: true,
-    totalStep: 3,
-    needDefaultPointFigure: false,
-    needDefaultXAxisFigure: true,
-    needDefaultYAxisFigure: true,
-    createPointFigures: ({coordinates}) => {
-        if (coordinates.length === 2) {
-            return [
-                {
-                    type: 'polygon',
-                    attrs: {
-                        coordinates: [
-                            coordinates[0],
-                            {x: coordinates[1].x, y: coordinates[0].y},
-                            coordinates[1],
-                            {x: coordinates[0].x, y: coordinates[1].y}
-                        ]
-                    },
-                    styles: {style: 'stroke_fill'}
-                }
-            ]
-        }
-        return []
-    }
-});
-klinecharts.registerOverlay({
-  name: 'chan-annotation',
-  totalStep: 2,
-  styles: {
-    text: {
-      borderSize: 1,
-      borderRadius: 8,
-      borderColor: 'rgba(129,1,1,0.5)',
-      paddingLeft: 5,
-      paddingRight: 5,
-      paddingTop: 5,
-      paddingBottom: 5,
-      backgroundColor: 'rgba(236,171,7,0.8)'
-    },
-    line: { style: 'dashed', color: 'rgba(129,1,1,0.5)'},
-    polygon: {color: 'rgba(129,1,1,0.5)'}
-  },
-  createPointFigures: ({ overlay, coordinates }) => {
-    let text = overlay.extendData.text ?? ''
-    let direction = overlay.extendData.direction ?? true
-    const startX = coordinates[0].x
-    const startY = coordinates[0].y
-    const lineEndY = startY - (direction ? 30 : -30)
-    return [
-      {
-        type: 'line',
-        attrs: { coordinates: [{ x: startX, y: startY }, { x: startX, y: lineEndY }] },
-        ignoreEvent: true
+      bars: [{
+        // 'fill' | 'stroke' | 'stroke_fill'
+        style: 'fill',
+        // 'solid' | 'dashed'
+        borderStyle: 'solid',
+        borderSize: 1,
+        borderDashedValue: [2, 2],
+        upColor: '#F21414',
+        downColor: '#08B536',
+        noChangeColor: '#888888'
+      }],
+      lastValueMark: {
+        show: true,
       },
+    }
+  });
 
-      {
-        type: 'text',
-        attrs: { x: startX, y: lineEndY, text: text ?? '', align: 'center', baseline: direction ? 'bottom' : 'top' },
-        ignoreEvent: true
-      }
-    ]
+  var chan_id = '';
+
+  chart._chartStore.getTimeScaleStore().zoom(1000)
+  fetch(`/data`).then(response => response.json())
+    .then(data => {
+      chartDataList = data.bar_list
+      chart.applyNewData(chartDataList)
+
+      chan_id = data.chan_id
+
+      data.bar_union_list?.forEach(item => chart.createOverlay(barUnionOverlayData(item)))
+      data.fractal_list?.forEach(item => chart.createOverlay(fractalOverlayData(item)))
+      data.stroke_list?.forEach(item => chart.createOverlay(strokeOverlayData(item)))
+      data.stroke_list?.forEach(item => chart.createOverlay(strokeBarOverlayData(item)))
+      data.segment_list?.forEach(item => chart.createOverlay(segmentOverlayData(item)))
+
+      setInterval(intervalUpdate, 1000);
+    });
+  function intervalUpdate() {
+    fetch(`/update/${chan_id}`).then(response => response.json())
+      .then(data => {
+        chartDataList = data.bar_list
+        for (const dataKey in chartDataList) {
+          chart.updateData(chartDataList[dataKey])
+        }
+
+        data.bar_union_list?.forEach(function (item) {
+          item = barUnionOverlayData(item)
+          if (chart.getOverlayById(item.id) == null) {
+            chart.createOverlay(item)
+          } else {
+            chart.overrideOverlay(item)
+          }
+        })
+        data.fractal_list?.forEach(function (item) {
+          item = fractalOverlayData(item)
+          if (chart.getOverlayById(item.id) == null) {
+            chart.createOverlay(item)
+          } else {
+            chart.overrideOverlay(item)
+          }
+        })
+        data.stroke_list?.forEach(function (item) {
+          item = strokeOverlayData(item)
+          if (chart.getOverlayById(item.id) == null) {
+            chart.createOverlay(item)
+          } else {
+            chart.overrideOverlay(item)
+          }
+        })
+        data.stroke_list?.forEach(function (item) {
+          item = strokeBarOverlayData(item)
+          if (chart.getOverlayById(item.id) == null) {
+            chart.createOverlay(item)
+          } else {
+            chart.overrideOverlay(item)
+          }
+        })
+        data.segment_list?.forEach(function (item) {
+          item = segmentOverlayData(item)
+          if (chart.getOverlayById(item.id) == null) {
+            chart.createOverlay(item)
+          } else {
+            chart.overrideOverlay(item)
+          }
+        })
+      })
   }
-});
-
-chart._chartStore.getTimeScaleStore().zoom(1000)
-fetch(`/data`)
-.then(response => response.json())
-.then(data => {
-    // 加载数据
-    chartDataList = data.bar_list
-    chart.applyNewData(chartDataList)
-
-    data.bar_union_list?.forEach(function (item) {
-        chart.createOverlay({
-            name: 'chan-rect',
-            groupId: 'chan-rect',
-            lock: true,
-            points: [item.begin, item.end],
-            styles: {
-                polygon: {
-                    color: 'rgba(128, 128, 0, 0.3)',
-                    borderColor: 'rgba(128, 128, 0, 0.8)',
-                    borderStyle: item.is_sure ? 'solid' : 'dashed',
-                    borderDashedValue: [2, 1],
-                }
-            },
-        });
-    })
-
-    data.fractal_list?.forEach(function (item) {
-        chart.createOverlay({
-            name: 'chan-annotation',
-            groupId: 'chan-annotation',
-            extendData: {
-                'direction': item.direction === 'TOP',
-                'text': item.direction === 'TOP' ? '顶' : '底',
-            },
-            lock: true,
-            points: [item],
-            styles: {
-                text: {
-                    color: item.direction === 'TOP' ? 'white' : 'white',
-                }
-            },
-        });
-    })
-
-    data.stroke_list?.forEach(function (item) {
-        chart.createOverlay({
-            name: 'chan-segment',
-            groupId: 'chan-segment',
-            lock: true,
-            extendData: item.name,
-            needDefaultPointFigure: false,
-            needDefaultXAxisFigure: false,
-            needDefaultYAxisFigure: false,
-            points: [item.begin, item.end],
-            styles: {
-                line: {
-                    color: '#000',
-                    style: item.is_sure ? 'solid' : 'dashed',
-                    dashedValue: [10, 5],
-                    size: 1
-                },
-                text: {
-                    color: '#000',
-                }
-            },
-        });
-    })
-
-    // 特征序列上涨下跌笔按bar的形式显示出来
-    data.stroke_list?.forEach(function (item) {
-        chart.createOverlay({
-            name: 'chan-rect',
-            groupId: 'chan-rect',
-            lock: true,
-            visible: false,
-            points: [item.begin, item.end],
-            styles: {
-                polygon: {
-                    color: item.direction === 'UP' ? 'rgba(232,7,7,0.3)' : 'rgba(10,145,6,0.3)',
-                    borderColor: item.direction === 'UP' ? 'rgba(232,7,7,0.8)' : 'rgba(10,145,6,0.8)',
-                    borderStyle: item.is_sure ? 'solid' : 'dashed',
-                    borderDashedValue: [10, 5],
-                }
-            },
-        });
-    })
-
-    data.segment_list?.forEach(function (item) {
-        chart.createOverlay({
-            name: 'chan-segment',
-            groupId: 'chan-segment',
-            lock: true,
-            extendData: item.name,
-            needDefaultPointFigure: false,
-            needDefaultXAxisFigure: false,
-            needDefaultYAxisFigure: false,
-            points: [item.begin, item.end],
-            styles: {
-                line: {
-                    color: '#de16a5',
-                    style: item.is_sure ? 'solid' : 'dashed',
-                    dashedValue: [10, 5],
-                    size: 2
-                },
-                text: {
-                    color: '#de16a5',
-                }
-            },
-        });
-    })
-});
 </script>
 </body>
 </html>

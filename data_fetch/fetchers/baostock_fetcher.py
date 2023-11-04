@@ -3,12 +3,12 @@ from baostock.data.resultset import ResultData
 
 import config
 from common.const import AdjType, DataField, PeriodEnum
-from data_fetch.abs_stock_api import AbsStockApi
+from data_fetch.fetcher import Fetcher
 
 
-class BaostockFetcher(AbsStockApi):
-    def __init__(self, ticker, begin_date=None, end_date=None, period=PeriodEnum.DAY):
-        super(BaostockFetcher, self).__init__(ticker, begin_date, end_date, period)
+class BaostockFetcher(Fetcher):
+    def __init__(self, ticker, start, end, period=PeriodEnum.DAY):
+        super(BaostockFetcher, self).__init__(ticker, start, end, period)
 
     def get_kl_data(self):
         bs.login()
@@ -16,8 +16,8 @@ class BaostockFetcher(AbsStockApi):
         adj_type_dict = {AdjType.QFQ: "2", AdjType.HFQ: "1", AdjType.NONE: "3"}
         rs: ResultData = bs.query_history_k_data_plus(
             code=self.ticker,
-            start_date=self.begin_date,
-            end_date=self.end_date,
+            start_date=self.start,
+            end_date=self.end,
             adjustflag=adj_type_dict[config.adj_type],
             fields="date,open,high,low,close,volume",
             frequency=self.__convert_period(),

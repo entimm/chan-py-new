@@ -35,7 +35,7 @@ class SegmentManager:
         if last_segment.stroke_list[-1].index == stroke.index:
             logger.info(f'线段同笔更新')
 
-            # 笔生长时更新极值点,并可能触发笔破坏
+            # 笔生长时更新极点,并可能触发笔破坏
             last_segment.update_vertex(stroke)
             self.handle_break(last_segment)
 
@@ -43,6 +43,9 @@ class SegmentManager:
 
         if last_segment.check_if_add(stroke):
             last_segment.add_stroke(stroke)
+            # 实笔诞生
+            if len(self.list) >= 2 and last_segment.len >= 3:
+                self.list[-2].is_ok = True
             # 线段长度变更后可能触发笔破坏
             self.handle_break(last_segment)
 
@@ -54,8 +57,7 @@ class SegmentManager:
         segment = Segment(len(self.list), stroke)
 
         logger.info(f'新增线段: {segment}')
-        if len(self.list) >= 1:
-            self.list[-1].is_ok = True
+
         self.list.append(segment)
 
     def handle_break(self, last_segment):
@@ -74,17 +76,16 @@ class SegmentManager:
 
     def try_split(self):
         """
-        根据反向的极值笔进行拆分
+        与前一线段的正向极点进行比对后合并
         """
         pre_segment = self.list[-2]
         last_segment = self.list[-1]
         if pre_segment.direction == Direction.UP:
-            if last_segment.top_stroke.high_fractal().index != pre_segment.top_stroke.high_fractal().index and last_segment.top_stroke.high_fractal().fractal_value >= pre_segment.top_stroke.high_fractal().fractal_value:
+            if Segment.top_vertex_higher(pre_segment, last_segment):
                 self.split_then_merge(pre_segment, last_segment, last_segment.top_stroke)
         if pre_segment.direction == Direction.DOWN:
-            if last_segment.bottom_stroke.low_fractal().index != pre_segment.bottom_stroke.low_fractal().index and last_segment.bottom_stroke.low_fractal().fractal_value <= pre_segment.bottom_stroke.low_fractal().fractal_value:
+            if Segment.bottom_vertex_lower(pre_segment, last_segment):
                 self.split_then_merge(pre_segment, last_segment, last_segment.bottom_stroke)
-                logger.info(f'after split_then_merge 前{pre_segment} 后{last_segment}')
 
     def split_then_merge(self, pre_segment: Segment, last_segment: Segment, stroke: Stroke):
         """
@@ -99,16 +100,15 @@ class SegmentManager:
             else:
                 in_stroke_list.append(item)
 
+        # 笔移除合并到前一根线段中
         if len(out_stroke_list) > 0:
             pre_segment.stroke_list = pre_segment.stroke_list + out_stroke_list
             pre_segment.len = len(pre_segment.stroke_list)
-            if pre_segment.direction == Direction.UP:
-                pre_segment.top_stroke = last_segment.top_stroke
-            if pre_segment.direction == Direction.DOWN:
-                pre_segment.bottom_stroke = last_segment.bottom_stroke
+            Segment.merge_vertex(pre_segment, last_segment)
             last_segment.status = SegmentStatus.MERGE
             last_segment.is_ok = False
 
+        # 剩余的笔保留到当前线段中
         if len(in_stroke_list) > 0:
             last_segment.stroke_list = in_stroke_list
             last_segment.len = len(in_stroke_list)
@@ -142,5 +142,5 @@ class SegmentManager:
 
         # 逐跟处理所有暂存笔
         for item in reprocess_stroke_list:
-           self.add_stroke(item)
+            self.add_stroke(item)
 

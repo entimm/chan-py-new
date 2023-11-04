@@ -89,16 +89,16 @@ class Segment:
 
     def update_vertex(self, stroke: Stroke):
         """
-        更新极值点
+        更新极点
         """
         if self.len == 1:
             self.top_stroke = stroke
             self.bottom_stroke = stroke
             return
 
-        if stroke.high_fractal().index != self.top_stroke.high_fractal().index and stroke.high_fractal().fractal_value >= self.top_stroke.high_fractal().fractal_value:
+        if Stroke.high_vertex_higher(self.top_stroke, stroke):
             self.set_top_stroke(stroke)
-        if stroke.low_fractal().index != self.bottom_stroke.low_fractal().index and stroke.low_fractal().fractal_value <= self.bottom_stroke.low_fractal().fractal_value:
+        if Stroke.low_vertex_lower(self.bottom_stroke, stroke):
             self.set_bottom_stroke(stroke)
 
     def set_top_stroke(self, stroke: Stroke):
@@ -133,9 +133,39 @@ class Segment:
         """
         return self.bottom_stroke if self.direction == Direction.UP else self.top_stroke
 
-    def __str__(self):
-        strock_desc = 'None'
-        if len(self.stroke_list) > 0:
-            strock_desc = f'{self.stroke_list[0].index}->{self.stroke_list[-1].index}'
+    @staticmethod
+    def top_vertex_higher(pre_segment: 'Segment', last_segment: 'Segment'):
+        """
+        前线段的正向极点比较后线段的反向极点（其实是同类型分型）
+        """
+        same_fractal = last_segment.top_stroke.high_fractal().index == pre_segment.top_stroke.high_fractal().index
+        growing = last_segment.top_stroke.high_fractal().fractal_value >= pre_segment.top_stroke.high_fractal().fractal_value
 
-        return f"【线段{self.index} 方向 {self.direction.name} 长度{self.len} 状态:{self.status.name} 笔:{strock_desc}】"
+        return not same_fractal and growing
+
+    @staticmethod
+    def bottom_vertex_lower(pre_segment: 'Segment', last_segment: 'Segment'):
+        """
+        前线段的正向极点比较后线段的反向极点（其实是同类型分型）
+        """
+        same_fractal = last_segment.bottom_stroke.low_fractal().index == pre_segment.bottom_stroke.low_fractal().index
+        growing = last_segment.bottom_stroke.low_fractal().fractal_value <= pre_segment.bottom_stroke.low_fractal().fractal_value
+
+        return not same_fractal and growing
+
+    @staticmethod
+    def merge_vertex(pre_segment: 'Segment', last_segment: 'Segment'):
+        """
+        前后线段合并极点
+        """
+        if pre_segment.direction == Direction.UP:
+            pre_segment.top_stroke = last_segment.top_stroke
+        if pre_segment.direction == Direction.DOWN:
+            pre_segment.bottom_stroke = last_segment.bottom_stroke
+
+    def __str__(self):
+        stroke_desc = 'None'
+        if len(self.stroke_list) > 0:
+            stroke_desc = f'{self.stroke_list[0].index}->{self.stroke_list[-1].index}'
+
+        return f"【线段{self.index} 方向 {self.direction.name} 长度{self.len} 状态:{self.status.name} 笔:{stroke_desc}】"

@@ -6,7 +6,7 @@ from data_process.const import Direction, FractalType
 
 class BarUnion:
     def __init__(self, index, bar: Bar, direction=Direction.INIT, fractal_type=FractalType.NOTHING):
-        self.time_begin = bar.time
+        self.time_start = bar.time
         self.time_end = bar.time
         self.high = bar.high
         self.low = bar.low
@@ -68,7 +68,7 @@ class BarUnion:
 
     def __str__(self):
         if self.fractal_type == FractalType.NOTHING:
-            return f'【合K:{self.time_begin}->{self.time_end}】'
+            return f'【合K:{self.time_start}->{self.time_end}】'
         if self.fractal_type == FractalType.TOP:
             return f'【顶K:{self.fractal_time}】'
         if self.fractal_type == FractalType.BOTTOM:

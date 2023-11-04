@@ -15,7 +15,7 @@ FETCHER_CLASSES = {
 }
 
 
-def get_stock_api(src):
+def get_fetcher(src):
     if src in FETCHER_CLASSES:
         cls_name = FETCHER_CLASSES[src]
         module = __import__(f"data_fetch.fetchers.{src.name.lower()}_fetcher", fromlist=[cls_name])
