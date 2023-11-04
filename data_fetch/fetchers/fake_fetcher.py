@@ -9,8 +9,8 @@ from data_fetch.abs_stock_api import AbsStockApi
 
 
 class FakeFetcher(AbsStockApi):
-    def __init__(self, code, begin_date=None, end_date=None, period=PeriodEnum.DAY):
-        super(FakeFetcher, self).__init__(code, begin_date, end_date, period)
+    def __init__(self, ticker, begin_date=None, end_date=None, period=PeriodEnum.DAY):
+        super(FakeFetcher, self).__init__(ticker, begin_date, end_date, period)
 
     def get_kl_data(self):
         def start_reach_limit(times=random.randint(1, 20)):

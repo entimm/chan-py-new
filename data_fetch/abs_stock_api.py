@@ -5,8 +5,8 @@ from common.const import PeriodEnum
 
 
 class AbsStockApi:
-    def __init__(self, code, begin_date, end_date, period: PeriodEnum):
-        self.code = code
+    def __init__(self, ticker, begin_date, end_date, period: PeriodEnum):
+        self.ticker = ticker
         self.begin_date = begin_date
         self.end_date = end_date
         self.period = period

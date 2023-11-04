@@ -1,4 +1,5 @@
 import baostock as bs
+from baostock.data.resultset import ResultData
 
 import config
 from common.const import AdjType, DataField, PeriodEnum
@@ -6,15 +7,15 @@ from data_fetch.abs_stock_api import AbsStockApi
 
 
 class BaostockFetcher(AbsStockApi):
-    def __init__(self, code, begin_date=None, end_date=None, period=PeriodEnum.DAY):
-        super(BaostockFetcher, self).__init__(code, begin_date, end_date, period)
+    def __init__(self, ticker, begin_date=None, end_date=None, period=PeriodEnum.DAY):
+        super(BaostockFetcher, self).__init__(ticker, begin_date, end_date, period)
 
     def get_kl_data(self):
         bs.login()
 
         adj_type_dict = {AdjType.QFQ: "2", AdjType.HFQ: "1", AdjType.NONE: "3"}
-        rs = bs.query_history_k_data_plus(
-            code=self.code,
+        rs: ResultData = bs.query_history_k_data_plus(
+            code=self.ticker,
             start_date=self.begin_date,
             end_date=self.end_date,
             adjustflag=adj_type_dict[config.adj_type],
