@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template
+from flask import Blueprint, render_template, request
 
 import config
 from common.const import PeriodEnum
@@ -14,8 +14,18 @@ def get_index():
 
 @data_blueprint.route('/data')
 def get_data():
-    chan = Chan('sh.000001')
-    chan.load('2020-01-01', '2023-09-30', PeriodEnum.DAY)
+    ticker = request.args.get('ticker', 'sh.000001')
+    start = request.args.get('start', '2020-01-01')
+    end = request.args.get('end', '2023-09-30')
+    period_name = request.args.get('period', 'DAY')
+
+    try:
+        period = PeriodEnum.__members__[period_name]
+    except KeyError:
+        period = PeriodEnum.DAY
+
+    chan = Chan(ticker)
+    chan.load(start, end, period)
     bar_list = [{
         'timestamp': item.time,
         'open': item.open,
