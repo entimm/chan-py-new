@@ -13,9 +13,9 @@ class Chan:
         self.stroke_manager: StrokeManager = StrokeManager()
         self.segment_manager: SegmentManager = SegmentManager()
 
-    def load(self, start, end):
+    def load(self, start, end, period):
         stockapi_cls = manager.get_stock_api(config.data_src)
-        stockapi_instance = stockapi_cls(code=self.ticker, begin_date=start, end_date=end)
+        stockapi_instance = stockapi_cls(code=self.ticker, begin_date=start, end_date=end, period=period)
         for kl_data in stockapi_instance.get_kl_data():
             self.add_kl(kl_data)
 

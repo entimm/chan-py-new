@@ -1,13 +1,13 @@
 import baostock as bs
 
 import config
-from common.const import AdjType, DataField
+from common.const import AdjType, DataField, PeriodEnum
 from data_fetch.abs_stock_api import AbsStockApi
 
 
 class BaostockFetcher(AbsStockApi):
-    def __init__(self, code, begin_date=None, end_date=None):
-        super(BaostockFetcher, self).__init__(code, begin_date, end_date)
+    def __init__(self, code, begin_date=None, end_date=None, period=PeriodEnum.DAY):
+        super(BaostockFetcher, self).__init__(code, begin_date, end_date, period)
 
     def get_kl_data(self):
         bs.login()
@@ -18,7 +18,8 @@ class BaostockFetcher(AbsStockApi):
             start_date=self.begin_date,
             end_date=self.end_date,
             adjustflag=adj_type_dict[config.adj_type],
-            fields="date,open,high,low,close,volume"
+            fields="date,open,high,low,close,volume",
+            frequency=self.__convert_period(),
         )
         if rs.error_code != '0':
             raise Exception(rs.error_msg)
@@ -35,3 +36,16 @@ class BaostockFetcher(AbsStockApi):
             yield info
 
         bs.logout()
+
+    def __convert_period(self):
+        _dict = {
+            PeriodEnum.M5: '5',
+            PeriodEnum.M15: '15',
+            PeriodEnum.M30: '30',
+            PeriodEnum.M60: '60',
+
+            PeriodEnum.DAY: 'd',
+            PeriodEnum.WEEK: 'w',
+            PeriodEnum.MON: 'm',
+        }
+        return _dict[self.period]

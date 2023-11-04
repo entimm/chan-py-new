@@ -1,6 +1,7 @@
 from flask import Blueprint, render_template
 
 import config
+from common.const import PeriodEnum
 from data_process.chan import Chan
 
 data_blueprint = Blueprint('data', __name__)
@@ -14,7 +15,7 @@ def get_index():
 @data_blueprint.route('/data')
 def get_data():
     chan = Chan('sh.000001')
-    chan.load('2020-01-01', '2023-09-30')
+    chan.load('2020-01-01', '2023-09-30', PeriodEnum.DAY)
     bar_list = [{
         'timestamp': item.time,
         'open': item.open,
