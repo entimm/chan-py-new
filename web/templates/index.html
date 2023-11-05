@@ -88,7 +88,25 @@
     }
   });
 
-  var chan_id = '';
+  var chanId = '';
+  var overlayGroup = {}
+
+  function addOverlay(item) {
+    if (overlayGroup[item.groupId]) {
+        overlayGroup[item.groupId].push(item.id);
+    } else {
+        overlayGroup[item.groupId] = [item.id];
+    }
+    chart.createOverlay(item)
+  }
+
+  function removeRecentOverlay() {
+    for (let key in overlayGroup) {
+      if (overlayGroup[key].length >= 1) {
+        chart.removeOverlay(overlayGroup[key].pop())
+      }
+    }
+  }
 
   chart._chartStore.getTimeScaleStore().zoom(1000)
   fetch(`/data`).then(response => response.json())
@@ -96,28 +114,32 @@
       chartDataList = data.bar_list
       chart.applyNewData(chartDataList)
 
-      chan_id = data.chan_id
+      chanId = data.chan_id
 
-      data.bar_union_list?.forEach(item => chart.createOverlay(barUnionOverlayData(item)))
-      data.fractal_list?.forEach(item => chart.createOverlay(fractalOverlayData(item)))
-      data.stroke_list?.forEach(item => chart.createOverlay(strokeOverlayData(item)))
-      data.stroke_list?.forEach(item => chart.createOverlay(strokeBarOverlayData(item)))
-      data.segment_list?.forEach(item => chart.createOverlay(segmentOverlayData(item)))
+      data.bar_union_list?.forEach(item => addOverlay(barUnionOverlayData(item)))
+      data.fractal_list?.forEach(item => addOverlay(fractalOverlayData(item)))
+      data.stroke_list?.forEach(item => addOverlay(strokeOverlayData(item)))
+      data.stroke_list?.forEach(item => addOverlay(strokeBarOverlayData(item)))
+      data.segment_list?.forEach(item => addOverlay(segmentOverlayData(item)))
 
       setInterval(intervalUpdate, 1000);
     });
   function intervalUpdate() {
-    fetch(`/update/${chan_id}`).then(response => response.json())
+    fetch(`/update/${chanId}`).then(response => response.json())
       .then(data => {
         chartDataList = data.bar_list
         for (const dataKey in chartDataList) {
           chart.updateData(chartDataList[dataKey])
         }
 
+        if (chartDataList.length > 0) {
+          removeRecentOverlay()
+        }
+
         data.bar_union_list?.forEach(function (item) {
           item = barUnionOverlayData(item)
           if (chart.getOverlayById(item.id) == null) {
-            chart.createOverlay(item)
+            addOverlay(item)
           } else {
             chart.overrideOverlay(item)
           }
@@ -125,7 +147,7 @@
         data.fractal_list?.forEach(function (item) {
           item = fractalOverlayData(item)
           if (chart.getOverlayById(item.id) == null) {
-            chart.createOverlay(item)
+            addOverlay(item)
           } else {
             chart.overrideOverlay(item)
           }
@@ -133,7 +155,7 @@
         data.stroke_list?.forEach(function (item) {
           item = strokeOverlayData(item)
           if (chart.getOverlayById(item.id) == null) {
-            chart.createOverlay(item)
+            addOverlay(item)
           } else {
             chart.overrideOverlay(item)
           }
@@ -141,7 +163,7 @@
         data.stroke_list?.forEach(function (item) {
           item = strokeBarOverlayData(item)
           if (chart.getOverlayById(item.id) == null) {
-            chart.createOverlay(item)
+            addOverlay(item)
           } else {
             chart.overrideOverlay(item)
           }
@@ -149,7 +171,7 @@
         data.segment_list?.forEach(function (item) {
           item = segmentOverlayData(item)
           if (chart.getOverlayById(item.id) == null) {
-            chart.createOverlay(item)
+            addOverlay(item)
           } else {
             chart.overrideOverlay(item)
           }

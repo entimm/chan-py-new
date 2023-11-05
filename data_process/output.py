@@ -39,7 +39,7 @@ def data(chan: Chan):
         'direction': item.direction.name,
         'begin': {'timestamp': item.stroke_list[0].fractal_start.fractal_time, 'value': item.stroke_list[0].fractal_start.fractal_value},
         'end': {'timestamp': item.stroke_list[-1].fractal_end.fractal_time, 'value': item.stroke_list[-1].fractal_end.fractal_value},
-    } for item in chan.segment_manager.list]
+    } for item in chan.segment_manager.list if item.len >= 3]
 
     data = {'bar_list': bar_list}
     if config.output_union: data['bar_union_list'] = bar_union_list
