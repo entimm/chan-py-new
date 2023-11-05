@@ -122,7 +122,8 @@
       data.stroke_list?.forEach(item => addOverlay(strokeBarOverlayData(item)))
       data.segment_list?.forEach(item => addOverlay(segmentOverlayData(item)))
 
-      setInterval(intervalUpdate, 1000);
+      var intervalId = setInterval(intervalUpdate, 1000);
+      clearInterval(intervalId);
     });
   function intervalUpdate() {
     fetch(`/update/${chanId}`).then(response => response.json())
