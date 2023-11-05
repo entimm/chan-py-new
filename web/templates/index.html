@@ -178,6 +178,12 @@
         })
       })
   }
+
+  function resizeChart() {
+    chart.resize()
+  }
+  window.addEventListener('resize', resizeChart);
+  window.addEventListener('load', resizeChart);
 </script>
 </body>
 </html>
