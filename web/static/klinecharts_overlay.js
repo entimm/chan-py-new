@@ -216,7 +216,7 @@ function segmentOverlayData(item) {
     name: 'chan-segment',
     groupId: 'segment',
     lock: true,
-    extendData: id,
+    extendData: `${id}-${item.status}`,
     needDefaultPointFigure: false,
     needDefaultXAxisFigure: false,
     needDefaultYAxisFigure: false,

@@ -36,6 +36,7 @@ def data(chan: Chan):
     segment_list = [{
         'index': item.index,
         'is_sure': item.is_ok,
+        'status': item.status.name,
         'direction': item.direction.name,
         'begin': {'timestamp': item.stroke_list[0].fractal_start.fractal_time, 'value': item.stroke_list[0].fractal_start.fractal_value},
         'end': {'timestamp': item.stroke_list[-1].fractal_end.fractal_time, 'value': item.stroke_list[-1].fractal_end.fractal_value},

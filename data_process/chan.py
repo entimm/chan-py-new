@@ -44,8 +44,8 @@ class Chan:
             self.step_load()
 
     def step_load(self):
+        self.i += 1
         if self.i >= len(self.data_list):
             return
 
         self.add_kl(self.data_list[self.i])
-        self.i += 1

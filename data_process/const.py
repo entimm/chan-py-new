@@ -25,4 +25,3 @@ class SegmentStatus(Enum):
     BREAK = auto()
     GROWING = auto()
     MERGE = auto()
-    SPLIT = auto()

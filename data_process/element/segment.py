@@ -74,7 +74,7 @@ class Segment:
 
         self.update_vertex(stroke)
 
-    def check_if_add(self, stroke):
+    def check_if_add(self, stroke: Stroke):
         """
         检测是否可以继续新增笔
         """
@@ -84,6 +84,9 @@ class Segment:
         # 一定是奇数个笔
         if self.len % 2 == 0:
             return True
+
+        if self.status == SegmentStatus.INIT:
+            return self.growing(stroke)
 
         return False
 
@@ -133,6 +136,18 @@ class Segment:
         """
         return self.bottom_stroke if self.direction == Direction.UP else self.top_stroke
 
+    def forward_vertex(self):
+        """
+        正向极点
+        """
+        return self.top_stroke.high_fractal() if self.direction == Direction.UP else self.bottom_stroke.low_fractal()
+
+    def back_vertex(self):
+        """
+        反向极点
+        """
+        return self.bottom_stroke.low_fractal() if self.direction == Direction.UP else self.top_stroke.high_fractal()
+
     @staticmethod
     def top_vertex_higher(pre_segment: 'Segment', last_segment: 'Segment'):
         """
@@ -169,3 +184,10 @@ class Segment:
             stroke_desc = f'{self.stroke_list[0].index}->{self.stroke_list[-1].index}'
 
         return f"【线段{self.index} 方向 {self.direction.name} 长度{self.len} 状态:{self.status.name} 笔:{stroke_desc}】"
+
+    def growing(self, stroke):
+        if self.direction == Direction.UP and stroke.direction == Direction.DOWN:
+            return stroke.fractal_end.fractal_value <= self.back_vertex().fractal_value
+        if self.direction == Direction.DOWN and stroke.direction == Direction.UP:
+            return stroke.fractal_end.fractal_value >= self.back_vertex().fractal_value
+        return True

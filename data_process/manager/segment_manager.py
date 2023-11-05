@@ -15,25 +15,32 @@ class SegmentManager:
         if stroke.len == 0:
             return
         if len(self.list) == 0:
-            self.appendWithStroke(stroke)
+            self.append_with_stroke(stroke)
             return
 
         last_segment = self.list[-1]
 
+        # 处理丢弃笔
         last_stroke = last_segment.stroke_list[-1]
         if last_stroke.dropped:
             self.process_dropped(stroke)
             return
 
-        self.try_make_new_segment(last_segment, stroke)
+        self.handle(last_segment, stroke)
 
-    def try_make_new_segment(self, last_segment: Segment, stroke: Stroke):
+    def handle(self, last_segment: Segment, stroke: Stroke):
         """
         投喂笔形成线段
         由于笔会生长，所以相同的笔会返回进来
         """
         if last_segment.stroke_list[-1].index == stroke.index:
             logger.info(f'线段同笔更新')
+
+            if len(self.list) >= 2 and last_segment.len == 1:
+                pre_segment = self.list[-2]
+                if pre_segment.check_if_add(stroke):
+                    self.list.pop()
+                    self.add_stroke_in_segment(pre_segment, stroke)
 
             # 笔生长时更新极点,并可能触发笔破坏
             last_segment.update_vertex(stroke)
@@ -42,18 +49,23 @@ class SegmentManager:
             return
 
         if last_segment.check_if_add(stroke):
-            last_segment.add_stroke(stroke)
-            # 实笔诞生
-            if len(self.list) >= 2 and last_segment.len >= 3:
-                self.list[-2].is_ok = True
-            # 线段长度变更后可能触发笔破坏
-            self.handle_break(last_segment)
-
+            self.add_stroke_in_segment(last_segment, stroke)
             return
 
-        self.appendWithStroke(stroke)
+        self.append_with_stroke(stroke)
 
-    def appendWithStroke(self, stroke: Stroke):
+    def add_stroke_in_segment(self, last_segment, stroke):
+        """
+        往当天的线段中投喂笔
+        """
+        last_segment.add_stroke(stroke)
+        # 实笔诞生
+        if len(self.list) >= 2 and last_segment.len >= 3:
+            self.list[-2].is_ok = True
+        # 线段长度变更后可能触发笔破坏
+        self.handle_break(last_segment)
+
+    def append_with_stroke(self, stroke: Stroke):
         segment = Segment(len(self.list), stroke)
 
         logger.info(f'新增线段: {segment}')
@@ -66,7 +78,9 @@ class SegmentManager:
         """
         if last_segment.status == SegmentStatus.BREAK:
             if len(self.list) == 1:
-                last_segment.rebase()
+                # 第一根线段看多几根笔,这个if条件也可不需要
+                if self.list[-1].len >= 4:
+                    last_segment.rebase()
             if len(self.list) >= 2:
                 self.list[-2].merge(last_segment)
                 self.list.pop()
@@ -108,13 +122,11 @@ class SegmentManager:
             last_segment.status = SegmentStatus.MERGE
             last_segment.is_ok = False
 
-        # 剩余的笔保留到当前线段中
+        self.list.pop()
+        # 剩余的笔重新添加
         if len(in_stroke_list) > 0:
-            last_segment.stroke_list = in_stroke_list
-            last_segment.len = len(in_stroke_list)
-            last_segment.status = SegmentStatus.SPLIT
-        else:
-            self.list.pop()
+            for item in in_stroke_list:
+                self.add_stroke(item)
 
     def process_dropped(self, stroke: Stroke):
         """
