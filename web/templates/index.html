@@ -26,6 +26,7 @@
 <body>
 <div id="chart"></div>
 <script>
+  var output_text = true
   var chart = klinecharts.init('chart', {
     timezone: 'Asia/Shanghai',
     customApi: {
@@ -111,6 +112,7 @@
   chart._chartStore.getTimeScaleStore().zoom(1000)
   fetch(`/data`).then(response => response.json())
     .then(data => {
+      output_text = data.output_text
       chartDataList = data.bar_list
       chart.applyNewData(chartDataList)
 

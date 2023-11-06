@@ -49,4 +49,6 @@ def data(chan: Chan):
     if config.output_stroke: data['stroke_list'] = stroke_list
     if config.output_segment: data['segment_list'] = segment_list
 
+    data['output_text'] = config.output_text
+
     return data

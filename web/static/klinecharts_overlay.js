@@ -3,6 +3,7 @@ klinecharts.registerOverlay({
   totalStep: 2,
   createPointFigures: ({overlay, coordinates}) => {
     let text = overlay.extendData.text ?? ''
+    text = output_text ? text : ''
     let direction = overlay.extendData.direction ?? true
     return [
       {
@@ -10,7 +11,7 @@ klinecharts.registerOverlay({
         attrs: {
           x: coordinates[0].x,
           y: coordinates[0].y,
-          text: text ?? '',
+          text: text,
           align: 'center',
           baseline: direction ? 'bottom' : 'top'
         },
@@ -27,6 +28,7 @@ klinecharts.registerOverlay({
   needDefaultXAxisFigure: true,
   needDefaultYAxisFigure: true,
   createPointFigures: ({overlay, coordinates}) => {
+    text = output_text ? overlay.extendData : ''
     if (coordinates.length === 2) {
       return [
         {
@@ -41,7 +43,7 @@ klinecharts.registerOverlay({
           attrs: {
             x: (coordinates[0].x + coordinates[1].x) / 2,
             y: (coordinates[0].y + coordinates[1].y) / 2,
-            text: overlay.extendData ?? '',
+            text: text,
             align: 'center',
             baseline: 'bottom'
           },
@@ -97,6 +99,7 @@ klinecharts.registerOverlay({
   },
   createPointFigures: ({overlay, coordinates}) => {
     let text = overlay.extendData.text ?? ''
+    text = output_text ? text : ''
     let direction = overlay.extendData.direction ?? true
     const startX = coordinates[0].x
     const startY = coordinates[0].y
@@ -113,7 +116,7 @@ klinecharts.registerOverlay({
         attrs: {
           x: startX,
           y: lineEndY,
-          text: text ?? '',
+          text: text,
           align: 'center',
           baseline: direction ? 'bottom' : 'top'
         },
