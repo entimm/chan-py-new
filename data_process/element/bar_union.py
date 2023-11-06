@@ -73,3 +73,6 @@ class BarUnion:
             return f'【顶K:{self.fractal_time}】'
         if self.fractal_type == FractalType.BOTTOM:
             return f'【底K:{self.fractal_time}】'
+
+    def __eq__(self, other):
+        return self.index == other.index

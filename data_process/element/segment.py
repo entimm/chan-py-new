@@ -46,9 +46,9 @@ class Segment:
         self.set_stroke_list(self.stroke_list + front_segment.stroke_list)
 
         # 如果前面的线段的至高至低点超过了当前的线段则进行相应的更新
-        if front_segment.top_stroke.high_fractal().fractal_value >= self.top_stroke.high_fractal().fractal_value:
+        if front_segment.top_stroke.high >= self.top_stroke.high:
             self.top_stroke = front_segment.top_stroke
-        if front_segment.bottom_stroke.low_fractal().fractal_value <= self.bottom_stroke.low_fractal().fractal_value:
+        if front_segment.bottom_stroke.low <= self.bottom_stroke.low:
             self.bottom_stroke = front_segment.bottom_stroke
 
         logger.info(f'{self} merge {front_segment}, 合并后尾笔:{self.stroke_list[-1]}')
@@ -67,8 +67,8 @@ class Segment:
         用于确定第一条线段的的开头位置
         如果存在反向突破就变基
         """
-        rebase_fractal = self.back_stroke()
-        self.set_stroke_list([stroke for stroke in self.stroke_list if stroke.index >= rebase_fractal.index])
+        rebase_stroke = self.back_stroke()
+        self.set_stroke_list([stroke for stroke in self.stroke_list if stroke.index >= rebase_stroke.index])
         self.direction = self.stroke_list[0].direction
 
         self.status = SegmentStatus.INIT
@@ -162,8 +162,8 @@ class Segment:
         """
         前线段的正向极点比较后线段的反向极点（其实是同类型分型）
         """
-        same_fractal = last_segment.top_stroke.high_fractal().index == pre_segment.top_stroke.high_fractal().index
-        growing = last_segment.top_stroke.high_fractal().fractal_value >= pre_segment.top_stroke.high_fractal().fractal_value
+        same_fractal = last_segment.top_stroke.high_fractal() == pre_segment.top_stroke.high_fractal()
+        growing = last_segment.top_stroke.high >= pre_segment.top_stroke.high
 
         return not same_fractal and growing
 
@@ -172,8 +172,8 @@ class Segment:
         """
         前线段的正向极点比较后线段的反向极点（其实是同类型分型）
         """
-        same_fractal = last_segment.bottom_stroke.low_fractal().index == pre_segment.bottom_stroke.low_fractal().index
-        growing = last_segment.bottom_stroke.low_fractal().fractal_value <= pre_segment.bottom_stroke.low_fractal().fractal_value
+        same_fractal = last_segment.bottom_stroke.low_fractal() == pre_segment.bottom_stroke.low_fractal()
+        growing = last_segment.bottom_stroke.low <= pre_segment.bottom_stroke.low
 
         return not same_fractal and growing
 
@@ -205,3 +205,14 @@ class Segment:
         if self.len >= 11:
             self.is_trend_1f = Stroke.is_overlapping(self.stroke_list[0], self.stroke_list[-1])
 
+    @property
+    def high(self):
+        stroke = self.stroke_list[-1] if self.direction ==  Direction.UP else self.stroke_list[0]
+
+        return stroke.high
+
+    @property
+    def low(self):
+        stroke = self.stroke_list[0] if self.direction ==  Direction.UP else self.stroke_list[-1]
+
+        return stroke.low

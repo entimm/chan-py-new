@@ -63,15 +63,15 @@ class Stroke:
 
     @staticmethod
     def high_vertex_higher(pre_stroke: 'Stroke', last_stroke: 'Stroke'):
-        same = last_stroke.high_fractal().index == pre_stroke.high_fractal().index
-        growing = last_stroke.high_fractal().fractal_value >= pre_stroke.high_fractal().fractal_value
+        same = last_stroke.high_fractal() == pre_stroke.high_fractal()
+        growing = last_stroke.high >= pre_stroke.high
 
         return not same and growing
 
     @staticmethod
     def low_vertex_lower(pre_stroke: 'Stroke', last_stroke: 'Stroke'):
-        same = last_stroke.low_fractal().index == pre_stroke.low_fractal().index
-        growing = last_stroke.low_fractal().fractal_value <= pre_stroke.low_fractal().fractal_value
+        same = last_stroke.low_fractal() == pre_stroke.low_fractal()
+        growing = last_stroke.low <= pre_stroke.low
 
         return not same and growing
 
@@ -81,6 +81,13 @@ class Stroke:
         diff = stroke.fractal_start.fractal_value - pre_stroke.fractal_end.fractal_value
         return diff <= 0 if stroke.direction == Direction.UP else diff >= 0
 
+    @property
+    def high(self):
+        return self.high_fractal().fractal_value
+
+    @property
+    def low(self):
+        return self.low_fractal().fractal_value
 
     def __str__(self):
         return f'【笔{self.index} 长度{self.len} 方向{self.direction.name} 两端:{self.fractal_start}->{self.fractal_end}】'
