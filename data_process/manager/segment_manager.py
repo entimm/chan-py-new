@@ -116,7 +116,7 @@ class SegmentManager:
 
         # 笔移除合并到前一根线段中
         if len(out_stroke_list) > 0:
-            pre_segment.stroke_list = pre_segment.stroke_list + out_stroke_list
+            pre_segment.set_stroke_list(pre_segment.stroke_list + out_stroke_list)
             pre_segment.len = len(pre_segment.stroke_list)
             Segment.merge_vertex(pre_segment, last_segment)
             last_segment.status = SegmentStatus.MERGE

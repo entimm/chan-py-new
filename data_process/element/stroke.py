@@ -75,5 +75,12 @@ class Stroke:
 
         return not same and growing
 
+    @staticmethod
+    def is_overlapping(pre_stroke: 'Stroke', stroke: 'Stroke'):
+        assert pre_stroke.direction == stroke.direction
+        diff = stroke.fractal_start.fractal_value - pre_stroke.fractal_end.fractal_value
+        return diff <= 0 if stroke.direction == Direction.UP else diff >= 0
+
+
     def __str__(self):
         return f'【笔{self.index} 长度{self.len} 方向{self.direction.name} 两端:{self.fractal_start}->{self.fractal_end}】'

@@ -27,6 +27,9 @@ class Segment:
         # 是否确认
         self.is_ok = False
 
+        # 是否是1F走势类型
+        self.is_trend_1f = False
+
     def add_stroke(self, stroke: Stroke):
         logger.info(f'{self} add_stroke {stroke}')
         if self.len == 0:
@@ -40,8 +43,7 @@ class Segment:
         """
         将前面的线段全部合并到当前的线段
         """
-        self.stroke_list = self.stroke_list + front_segment.stroke_list
-        self.len = len(self.stroke_list)
+        self.set_stroke_list(self.stroke_list + front_segment.stroke_list)
 
         # 如果前面的线段的至高至低点超过了当前的线段则进行相应的更新
         if front_segment.top_stroke.high_fractal().fractal_value >= self.top_stroke.high_fractal().fractal_value:
@@ -54,15 +56,20 @@ class Segment:
         self.status = SegmentStatus.MERGE
         self.is_ok = False
 
+    def set_stroke_list(self, stroke_list):
+        self.stroke_list = stroke_list
+        self.len = len(self.stroke_list)
+
+        self.pivot()
+
     def rebase(self):
         """
         用于确定第一条线段的的开头位置
         如果存在反向突破就变基
         """
         rebase_fractal = self.back_stroke()
-        self.stroke_list = [stroke for stroke in self.stroke_list if stroke.index >= rebase_fractal.index]
+        self.set_stroke_list([stroke for stroke in self.stroke_list if stroke.index >= rebase_fractal.index])
         self.direction = self.stroke_list[0].direction
-        self.len = len(self.stroke_list)
 
         self.status = SegmentStatus.INIT
 
@@ -71,6 +78,8 @@ class Segment:
     def append(self, stroke: Stroke):
         self.stroke_list.append(stroke)
         self.len = len(self.stroke_list)
+
+        self.pivot()
 
         self.update_vertex(stroke)
 
@@ -191,3 +200,8 @@ class Segment:
         if self.direction == Direction.DOWN and stroke.direction == Direction.UP:
             return stroke.fractal_end.fractal_value >= self.back_vertex().fractal_value
         return True
+
+    def pivot(self):
+        if self.len >= 11:
+            self.is_trend_1f = Stroke.is_overlapping(self.stroke_list[0], self.stroke_list[-1])
+

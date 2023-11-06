@@ -223,13 +223,13 @@ function segmentOverlayData(item) {
     points: [item.begin, item.end],
     styles: {
       line: {
-        color: '#de16a5',
+        color: !item.is_trend_1f ? '#de16a5' : '#1620de',
         style: item.is_sure ? 'solid' : 'dashed',
         dashedValue: [10, 5],
         size: 2
       },
       text: {
-        color: '#de16a5',
+        color: !item.is_trend_1f ? '#de16a5' : '#1620de',
         size: 15
       }
     },
