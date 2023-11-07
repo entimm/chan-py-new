@@ -7,7 +7,7 @@ from data_fetch.fetcher import Fetcher
 
 
 class BaostockFetcher(Fetcher):
-    def __init__(self, ticker, start, end, period=PeriodEnum.DAY):
+    def __init__(self, ticker, start, end, period=PeriodEnum.D):
         super(BaostockFetcher, self).__init__(ticker, start, end, period)
 
     def get_kl_data(self):
@@ -45,8 +45,8 @@ class BaostockFetcher(Fetcher):
             PeriodEnum.M30: '30',
             PeriodEnum.M60: '60',
 
-            PeriodEnum.DAY: 'd',
-            PeriodEnum.WEEK: 'w',
-            PeriodEnum.MON: 'm',
+            PeriodEnum.D: 'd',
+            PeriodEnum.W: 'w',
+            PeriodEnum.M: 'm',
         }
         return _dict[self.period]

@@ -9,7 +9,7 @@ from data_fetch.fetcher import Fetcher
 
 
 class FakeFetcher(Fetcher):
-    def __init__(self, ticker, start, end, period=PeriodEnum.DAY):
+    def __init__(self, ticker, start, end, period=PeriodEnum.D):
         super(FakeFetcher, self).__init__(ticker, start, end, period)
 
     def get_kl_data(self):

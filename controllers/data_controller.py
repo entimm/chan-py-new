@@ -20,12 +20,12 @@ def get_data():
     ticker = request.args.get('ticker', 'sh.000001')
     start = request.args.get('start', '2020-01-01')
     end = request.args.get('end', '2023-09-30')
-    period_name = request.args.get('period', 'DAY')
+    period_name = request.args.get('period', 'D')
 
     try:
         period = PeriodEnum.__members__[period_name]
     except KeyError:
-        period = PeriodEnum.DAY
+        period = PeriodEnum.D
 
     chan = Chan(ticker, start, end, period)
     chan.load()

@@ -17,13 +17,13 @@ class AdjType(Enum):
 
 
 class PeriodEnum(Enum):
-    M1 = auto()
-    M5 = auto()
-    M15 = auto()
-    M30 = auto()
-    M60 = auto()
+    F1 = auto()
+    F5 = auto()
+    F15 = auto()
+    F30 = auto()
 
-    DAY = auto()
-    WEEK = auto()
-    MON = auto()
+    H = auto()
 
+    D = auto()
+    W = auto()
+    M = auto()

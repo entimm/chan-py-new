@@ -6,7 +6,7 @@ from data_fetch.fetcher import Fetcher
 
 
 class YfinanceFetcher(Fetcher):
-    def __init__(self, ticker, start, end, period=PeriodEnum.DAY):
+    def __init__(self, ticker, start, end, period=PeriodEnum.D):
         super(YfinanceFetcher, self).__init__(ticker, start, end, period)
 
     def get_kl_data(self):
@@ -37,8 +37,8 @@ class YfinanceFetcher(Fetcher):
             PeriodEnum.M30: '30m',
             PeriodEnum.M60: '1h',
 
-            PeriodEnum.DAY: '1d',
-            PeriodEnum.WEEK: '1wk',
-            PeriodEnum.MON: '1mo',
+            PeriodEnum.D: '1d',
+            PeriodEnum.W: '1wk',
+            PeriodEnum.M: '1mo',
         }
         return _dict[self.period]
