@@ -5,8 +5,8 @@ from data_fetch.manager import DataSrc
 adj_type = AdjType.QFQ
 data_src = DataSrc.LOCAL
 local_data_file_name = "sh.000001"
-kline_len = 50000
-step_skip = 5000
+kline_len = 5000
+step_skip = kline_len
 
 # 输出
 output_text = False
