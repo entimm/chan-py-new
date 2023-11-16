@@ -23,13 +23,14 @@ class Segment(ChanBar):
         # 含有至低点的笔
         self.bottom_stroke: Optional[Stroke] = None
 
-        self.add_stroke(stroke)
-
         # 是否确认
         self.is_ok = False
 
         # 是否是1F走势类型
         self.is_trend_1f = False
+
+        logger.info(f'新线段诞生:{self}')
+        self.add_stroke(stroke)
 
     def add_stroke(self, stroke: Stroke):
         logger.info(f'{self} add_stroke {stroke}')

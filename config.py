@@ -9,7 +9,7 @@ kline_len = 5000
 step_skip = kline_len
 
 # 输出
-output_text = False
+output_text = True
 output_fractal = True
 output_union = False
 output_stroke = True

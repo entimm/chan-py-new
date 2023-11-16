@@ -39,7 +39,7 @@ class SegmentManager:
             if len(self.list) >= 2 and last_segment.len == 1:
                 pre_segment = self.list[-2]
                 if pre_segment.check_if_add(stroke):
-                    self.list.pop()
+                    self.cancel_last_segment()
                     self.add_stroke_in_segment(pre_segment, stroke)
 
             # 笔生长时更新极点,并可能触发笔破坏
@@ -54,7 +54,7 @@ class SegmentManager:
 
         self.append_with_stroke(stroke)
 
-    def add_stroke_in_segment(self, last_segment, stroke):
+    def add_stroke_in_segment(self, last_segment: Segment, stroke):
         """
         往当天的线段中投喂笔
         """
@@ -83,7 +83,7 @@ class SegmentManager:
                     last_segment.rebase()
             if len(self.list) >= 2:
                 self.list[-2].merge(last_segment)
-                self.list.pop()
+                self.cancel_last_segment()
                 # 合并过完如果存在反向突破，则拆分并继续与前一线段进行部分合并
                 if len(self.list) >= 2:
                     self.try_split()
@@ -122,7 +122,7 @@ class SegmentManager:
             last_segment.status = SegmentStatus.MERGE
             last_segment.is_ok = False
 
-        self.list.pop()
+        self.cancel_last_segment()
         # 剩余的笔重新添加
         if len(in_stroke_list) > 0:
             for item in in_stroke_list:
@@ -135,7 +135,7 @@ class SegmentManager:
         logger.info(f'线段处理丢弃 {stroke}')
         # 把最近的那个线段中的笔暂存以便重新处理，然后丢弃
         reprocess_stroke_list = self.list[-1].stroke_list
-        self.list.pop()
+        self.cancel_last_segment()
         # 暂存笔移除被丢弃的笔
         dropped_stroke = reprocess_stroke_list.pop()
 
@@ -149,10 +149,13 @@ class SegmentManager:
 
         reprocess_stroke_list = reprocess_stroke_list + append_reprocess_stroke_list
 
-        append_reprocess_stroke_str_list = [str(item) for item in append_reprocess_stroke_list]
-        logger.info(f'重新处理笔列表大小 {len(reprocess_stroke_list)}, 关键的笔:{len(append_reprocess_stroke_list)}笔 {append_reprocess_stroke_str_list}')
+        logger.info(f'重新处理笔列表大小 {len(reprocess_stroke_list)}, 关键的笔:{len(append_reprocess_stroke_list)}笔 {[str(item) for item in append_reprocess_stroke_list]}')
 
         # 逐跟处理所有暂存笔
         for item in reprocess_stroke_list:
             self.add_stroke(item)
+
+    def cancel_last_segment(self):
+        segment = self.list.pop()
+        logger.info(f'线段被丢弃 {segment}')
 

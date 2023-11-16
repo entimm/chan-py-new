@@ -23,7 +23,7 @@ class Stroke(ChanBar):
 
         self.index = index
 
-        self.direction = self.cal_direction()
+        self.direction = self.__cal_direction()
 
         # 暂存分型（辅助计算之用）
         self.stash_fractal: Optional[BarUnion] = None
@@ -36,7 +36,7 @@ class Stroke(ChanBar):
         设置笔头
         """
         self.fractal_start = cur_fractal
-        self.direction = self.cal_direction()
+        self.direction = self.__cal_direction()
         logger.info(f'{self}设置笔首{cur_fractal}')
 
     def set_end(self, cur_fractal: Optional[BarUnion]):
@@ -47,7 +47,7 @@ class Stroke(ChanBar):
         self.len = 0 if cur_fractal is None else cur_fractal.index - self.fractal_start.index
         logger.info(f'{self}设置笔尾{cur_fractal}')
 
-    def cal_direction(self):
+    def __cal_direction(self):
         return Direction.UP if self.fractal_start.fractal_type == FractalType.BOTTOM else Direction.DOWN
 
     def high_fractal(self):

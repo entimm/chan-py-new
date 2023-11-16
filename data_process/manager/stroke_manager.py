@@ -11,7 +11,6 @@ from logger import logger
 class StrokeManager:
     def __init__(self):
         self.list: List[Stroke] = []
-        self.drop_list: List[Stroke] = []
 
         # 暂存与第一笔的笔头相反的分型 (辅助纠正第一笔的笔头之用)
         self.first_stroke_header_stash: List[BarUnion] = []
@@ -83,7 +82,8 @@ class StrokeManager:
         # 落新笔
         self.append(Stroke(len(self.list), last_stroke.fractal_end, cur_fractal))
 
-    def try_set_stash_fractal(self, last_stroke, cur_fractal):
+    @staticmethod
+    def try_set_stash_fractal(last_stroke, cur_fractal):
         """
         尝试设置暂存的关键分型
         """
@@ -113,7 +113,6 @@ class StrokeManager:
 
         # 截断上根笔
         logger.info(f'{self.list[-1]}被丢弃')
-        self.drop_list.append(self.list[-1])
         self.list[-1].dropped = True
         self.list.pop()
 
