@@ -40,10 +40,10 @@ class BaostockFetcher(Fetcher):
 
     def __convert_period(self):
         _dict = {
-            PeriodEnum.M5: '5',
-            PeriodEnum.M15: '15',
-            PeriodEnum.M30: '30',
-            PeriodEnum.M60: '60',
+            PeriodEnum.F5: '5',
+            PeriodEnum.F15: '15',
+            PeriodEnum.F30: '30',
+            PeriodEnum.F60: '60',
 
             PeriodEnum.D: 'd',
             PeriodEnum.W: 'w',

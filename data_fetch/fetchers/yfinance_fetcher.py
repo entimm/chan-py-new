@@ -31,11 +31,11 @@ class YfinanceFetcher(Fetcher):
 
     def __convert_period(self):
         _dict = {
-            PeriodEnum.M1: '1m',
-            PeriodEnum.M5: '5m',
-            PeriodEnum.M15: '15m',
-            PeriodEnum.M30: '30m',
-            PeriodEnum.M60: '1h',
+            PeriodEnum.F1: '1m',
+            PeriodEnum.F5: '5m',
+            PeriodEnum.F15: '15m',
+            PeriodEnum.F30: '30m',
+            PeriodEnum.H: '1h',
 
             PeriodEnum.D: '1d',
             PeriodEnum.W: '1wk',
