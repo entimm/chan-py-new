@@ -2,10 +2,11 @@ from typing import Optional
 
 from data_process.element.bar_union import BarUnion
 from data_process.const import FractalType, Direction
+from data_process.element.abs_bar import ChanBar
 from logger import logger
 
 
-class Stroke:
+class Stroke(ChanBar):
     direction: Direction
 
     def __init__(self, index, fractal_start: BarUnion, fractal_end: Optional[BarUnion]):

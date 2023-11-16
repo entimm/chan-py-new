@@ -2,14 +2,15 @@ from typing import List, Optional
 
 from data_process.element.bar import Bar
 from data_process.const import Direction, FractalType
+from data_process.element.abs_bar import ChanBar
 
 
-class BarUnion:
+class BarUnion(ChanBar):
     def __init__(self, index, bar: Bar, direction=Direction.INIT, fractal_type=FractalType.NOTHING):
         self.time_start = bar.time
         self.time_end = bar.time
-        self.high = bar.high
-        self.low = bar.low
+        self._high = bar.high
+        self._low = bar.low
 
         self.direction: Direction = direction
 
@@ -34,16 +35,16 @@ class BarUnion:
         self.bar_list.append(bar)
         # 上涨趋势取双高
         if self.direction == Direction.UP:
-            self.high = max(self.high, bar.high)
-            self.low = max(self.low, bar.low)
+            self._high = max(self._high, bar.high)
+            self._low = max(self._low, bar.low)
         # 上涨趋势取双低
         if self.direction == Direction.DOWN:
-            self.high = min(self.high, bar.high)
-            self.low = min(self.low, bar.low)
+            self._high = min(self._high, bar.high)
+            self._low = min(self._low, bar.low)
         # 最开始的几根可以合并的k线无法定性趋势
         if self.direction == Direction.INIT:
-            self.high = max(self.high, bar.high)
-            self.low = min(self.low, bar.low)
+            self._high = max(self._high, bar.high)
+            self._low = min(self._low, bar.low)
 
     def get_key_pos(self):
         """
@@ -51,12 +52,12 @@ class BarUnion:
         """
         if self.direction == Direction.UP:
             for bar in self.bar_list[::-1]:
-                if self.high == bar.high:
+                if self._high == bar.high:
                     return bar.time, bar.high
 
         if self.direction == Direction.DOWN:
             for bar in self.bar_list[::-1]:
-                if self.low == bar.low:
+                if self._low == bar.low:
                     return bar.time, bar.low
 
     def set_fractal(self, fractal_type: FractalType):
@@ -76,3 +77,11 @@ class BarUnion:
 
     def __eq__(self, other):
         return self.index == other.index
+
+    @property
+    def high(self):
+        return self._high
+
+    @property
+    def low(self):
+        return self._low

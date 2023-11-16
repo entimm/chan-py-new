@@ -1,11 +1,12 @@
 from typing import Optional
 
 from data_process.const import Direction, SegmentStatus
+from data_process.element.abs_bar import ChanBar
 from data_process.element.stroke import Stroke
 from logger import logger
 
 
-class Segment:
+class Segment(ChanBar):
     def __init__(self, index, stroke: Stroke):
         self.stroke_list: list[Stroke] = []
 
