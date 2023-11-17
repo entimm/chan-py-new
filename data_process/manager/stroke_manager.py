@@ -36,8 +36,6 @@ class StrokeManager:
         else:
             self.try_make_new_stroke(last_stroke, cur_fractal)
 
-        return self.list[-1]
-
     def handle_first_stroke(self, last_stroke, cur_fractal):
         """
         安排处理第一笔
@@ -113,8 +111,10 @@ class StrokeManager:
 
         # 截断上根笔
         logger.info(f'{self.list[-1]}被丢弃')
-        self.list[-1].dropped = True
         self.list.pop()
 
         self.list[-1].set_end(cur_fractal)
         self.list[-1].is_ok = False
+
+    def waiting_process_list(self):
+        return reversed([item for item in self.list[::-1] if item.waiting_process])

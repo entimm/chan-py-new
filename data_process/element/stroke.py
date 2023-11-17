@@ -28,8 +28,7 @@ class Stroke(ChanBar):
         # 暂存分型（辅助计算之用）
         self.stash_fractal: Optional[BarUnion] = None
 
-        # 是否被丢弃然后重新生成
-        self.dropped = False
+        self.waiting_process = True
 
     def set_start(self, cur_fractal: BarUnion):
         """
@@ -46,6 +45,8 @@ class Stroke(ChanBar):
         self.fractal_end = cur_fractal
         self.len = 0 if cur_fractal is None else cur_fractal.index - self.fractal_start.index
         logger.info(f'{self}设置笔尾{cur_fractal}')
+
+        self.waiting_process = True
 
     def __cal_direction(self):
         return Direction.UP if self.fractal_start.fractal_type == FractalType.BOTTOM else Direction.DOWN

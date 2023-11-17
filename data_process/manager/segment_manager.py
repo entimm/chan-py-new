@@ -22,8 +22,9 @@ class SegmentManager:
 
         # 处理丢弃笔
         last_stroke = last_segment.stroke_list[-1]
-        if last_stroke.dropped:
-            self.process_dropped(stroke)
+        if stroke.index < last_stroke.index:
+            # self.process_dropped(stroke)
+            self.process_multi_dropped(stroke, last_segment)
             return
 
         self.handle(last_segment, stroke)
@@ -128,15 +129,16 @@ class SegmentManager:
             for item in in_stroke_list:
                 self.add_stroke(item)
 
-    def process_dropped(self, stroke: Stroke):
+    def process_one_dropped(self, stroke: Stroke):
         """
-        处理笔丢弃的情况
+        处理单笔丢弃的情况
+        更加高效巧妙，不需要重新处理之前不变的笔
         """
         logger.info(f'线段处理丢弃 {stroke}')
         # 把最近的那个线段中的笔暂存以便重新处理，然后丢弃
         reprocess_stroke_list = self.list[-1].stroke_list
         self.cancel_last_segment()
-        # 暂存笔移除被丢弃的笔
+        # 暂存笔里面移除被丢弃的笔
         dropped_stroke = reprocess_stroke_list.pop()
 
         append_reprocess_stroke_list = []
@@ -144,12 +146,37 @@ class SegmentManager:
         if len(reprocess_stroke_list) == 0:
             append_reprocess_stroke_list.append(self.list[-1].stroke_list[-1])
         # 因为丢弃的笔也从暂存笔中也被丢弃了，所以如果当前的笔和丢弃笔位置相同，则加进去
+        # 如果有，他也一定是最新的笔
         if stroke.index == dropped_stroke.index:
             append_reprocess_stroke_list.append(stroke)
 
         reprocess_stroke_list = reprocess_stroke_list + append_reprocess_stroke_list
 
         logger.info(f'重新处理笔列表大小 {len(reprocess_stroke_list)}, 关键的笔:{len(append_reprocess_stroke_list)}笔 {[str(item) for item in append_reprocess_stroke_list]}')
+
+        # 逐跟处理所有暂存笔
+        for item in reprocess_stroke_list:
+            self.add_stroke(item)
+
+    def process_multi_dropped(self, stroke: Stroke, last_segment):
+        """
+        处理多笔丢弃的情况
+        可能会重新处理之前不变的笔
+        """
+        logger.info(f'线段处理多个丢弃 {stroke}')
+        # 把最近的那个线段中的笔暂存以便重新处理
+        reprocess_stroke_list = []
+        # 把涉及到的线段都丢掉
+        while stroke.index < last_segment.stroke_list[-1].index:
+            reprocess_stroke_list = last_segment.stroke_list + reprocess_stroke_list
+            self.cancel_last_segment()
+            if len(self.list) >= 1:
+                last_segment = self.list[-1]
+            else:
+                break
+
+        reprocess_stroke_list = [item for item in reprocess_stroke_list if item.index < stroke.index]
+        reprocess_stroke_list.append(stroke)
 
         # 逐跟处理所有暂存笔
         for item in reprocess_stroke_list:

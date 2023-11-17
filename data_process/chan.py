@@ -35,8 +35,9 @@ class Chan:
         new_bar = Bar(kl_data)
         bar_union = self.bar_union_manager.add_bar(new_bar)
         if bar_union is not None:
-            stroke = self.stroke_manager.add_fractal(bar_union)
-            if stroke is not None:
+            self.stroke_manager.add_fractal(bar_union)
+            for stroke in self.stroke_manager.waiting_process_list():
+                stroke.waiting_process = False
                 self.segment_manager.add_stroke(stroke)
 
     def load(self):
