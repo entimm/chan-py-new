@@ -2,10 +2,10 @@ from typing import List, Optional
 
 from data_process.element.bar import Bar
 from data_process.const import Direction, FractalType
-from data_process.element.abs_bar import ChanBar
+from data_process.element.abs_bar import AbsBar
 
 
-class BarUnion(ChanBar):
+class BarUnion(AbsBar):
     def __init__(self, index, bar: Bar, direction=Direction.INIT, fractal_type=FractalType.NOTHING):
         self.time_start = bar.time
         self.time_end = bar.time

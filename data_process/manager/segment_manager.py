@@ -1,8 +1,8 @@
 from typing import List
 
 from data_process.const import SegmentStatus, Direction
+from data_process.element.abs_stroke import AbsStroke
 from data_process.element.segment import Segment
-from data_process.element.stroke import Stroke
 from logger import logger
 
 
@@ -10,7 +10,7 @@ class SegmentManager:
     def __init__(self):
         self.list: List[Segment] = []
 
-    def add_stroke(self, stroke: Stroke):
+    def add_stroke(self, stroke: AbsStroke):
         logger.info(f'投喂笔给线段 {stroke}')
         if stroke.len == 0:
             return
@@ -29,7 +29,7 @@ class SegmentManager:
 
         self.handle(last_segment, stroke)
 
-    def handle(self, last_segment: Segment, stroke: Stroke):
+    def handle(self, last_segment: Segment, stroke: AbsStroke):
         """
         投喂笔形成线段
         由于笔会生长，所以相同的笔会返回进来
@@ -55,7 +55,7 @@ class SegmentManager:
 
         self.append_with_stroke(stroke)
 
-    def add_stroke_in_segment(self, last_segment: Segment, stroke):
+    def add_stroke_in_segment(self, last_segment: Segment, stroke: AbsStroke):
         """
         往当天的线段中投喂笔
         """
@@ -66,7 +66,7 @@ class SegmentManager:
         # 线段长度变更后可能触发笔破坏
         self.handle_break(last_segment)
 
-    def append_with_stroke(self, stroke: Stroke):
+    def append_with_stroke(self, stroke: AbsStroke):
         segment = Segment(len(self.list), stroke)
 
         logger.info(f'新增线段: {segment}')
@@ -102,13 +102,13 @@ class SegmentManager:
             if Segment.bottom_vertex_lower(pre_segment, last_segment):
                 self.split_then_merge(pre_segment, last_segment, last_segment.bottom_stroke)
 
-    def split_then_merge(self, pre_segment: Segment, last_segment: Segment, stroke: Stroke):
+    def split_then_merge(self, pre_segment: Segment, last_segment: Segment, stroke: AbsStroke):
         """
         拆分后进行合并
         """
         logger.info(f'{pre_segment} split_then_merge {last_segment} 用 {stroke}')
-        out_stroke_list: list[Stroke] = []
-        in_stroke_list: list[Stroke] = []
+        out_stroke_list: list[AbsStroke] = []
+        in_stroke_list: list[AbsStroke] = []
         for item in last_segment.stroke_list:
             if item.index <= stroke.index:
                 out_stroke_list.append(item)
@@ -118,7 +118,6 @@ class SegmentManager:
         # 笔移除合并到前一根线段中
         if len(out_stroke_list) > 0:
             pre_segment.set_stroke_list(pre_segment.stroke_list + out_stroke_list)
-            pre_segment.len = len(pre_segment.stroke_list)
             Segment.merge_vertex(pre_segment, last_segment)
             last_segment.status = SegmentStatus.MERGE
             last_segment.is_ok = False
@@ -129,7 +128,7 @@ class SegmentManager:
             for item in in_stroke_list:
                 self.add_stroke(item)
 
-    def process_one_dropped(self, stroke: Stroke):
+    def process_one_dropped(self, stroke: AbsStroke):
         """
         处理单笔丢弃的情况
         更加高效巧妙，不需要重新处理之前不变的笔
@@ -158,7 +157,7 @@ class SegmentManager:
         for item in reprocess_stroke_list:
             self.add_stroke(item)
 
-    def process_multi_dropped(self, stroke: Stroke, last_segment):
+    def process_multi_dropped(self, stroke: AbsStroke, last_segment):
         """
         处理多笔丢弃的情况
         可能会重新处理之前不变的笔

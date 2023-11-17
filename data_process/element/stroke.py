@@ -1,12 +1,12 @@
 from typing import Optional
 
+from data_process.element.abs_stroke import AbsStroke
 from data_process.element.bar_union import BarUnion
 from data_process.const import FractalType, Direction
-from data_process.element.abs_bar import ChanBar
 from logger import logger
 
 
-class Stroke(ChanBar):
+class Stroke(AbsStroke):
     direction: Direction
 
     def __init__(self, index, fractal_start: BarUnion, fractal_end: Optional[BarUnion]):
@@ -15,15 +15,15 @@ class Stroke(ChanBar):
         # 笔尾
         self.fractal_end: BarUnion = fractal_end
         # 长度
-        self.len = 0
+        self._len = 0
         if fractal_end is not None:
-            self.len = fractal_end.index - fractal_start.index
+            self._len = fractal_end.index - fractal_start.index
         # 是否确认
         self.is_ok = False
 
-        self.index = index
+        self._index = index
 
-        self.direction = self.__cal_direction()
+        self._direction = self.__cal_direction()
 
         # 暂存分型（辅助计算之用）
         self.stash_fractal: Optional[BarUnion] = None
@@ -35,7 +35,7 @@ class Stroke(ChanBar):
         设置笔头
         """
         self.fractal_start = cur_fractal
-        self.direction = self.__cal_direction()
+        self._direction = self.__cal_direction()
         logger.info(f'{self}设置笔首{cur_fractal}')
 
     def set_end(self, cur_fractal: Optional[BarUnion]):
@@ -43,7 +43,7 @@ class Stroke(ChanBar):
         设置笔尾
         """
         self.fractal_end = cur_fractal
-        self.len = 0 if cur_fractal is None else cur_fractal.index - self.fractal_start.index
+        self._len = 0 if cur_fractal is None else cur_fractal.index - self.fractal_start.index
         logger.info(f'{self}设置笔尾{cur_fractal}')
 
         self.waiting_process = True
@@ -52,36 +52,16 @@ class Stroke(ChanBar):
         return Direction.UP if self.fractal_start.fractal_type == FractalType.BOTTOM else Direction.DOWN
 
     def high_fractal(self):
-        if self.direction == Direction.UP:
+        if self._direction == Direction.UP:
             return self.fractal_end
         else:
             return self.fractal_start
 
     def low_fractal(self):
-        if self.direction == Direction.UP:
+        if self._direction == Direction.UP:
             return self.fractal_start
         else:
             return self.fractal_end
-
-    @staticmethod
-    def high_vertex_higher(pre_stroke: 'Stroke', last_stroke: 'Stroke'):
-        same = last_stroke.high_fractal() == pre_stroke.high_fractal()
-        growing = last_stroke.high >= pre_stroke.high
-
-        return not same and growing
-
-    @staticmethod
-    def low_vertex_lower(pre_stroke: 'Stroke', last_stroke: 'Stroke'):
-        same = last_stroke.low_fractal() == pre_stroke.low_fractal()
-        growing = last_stroke.low <= pre_stroke.low
-
-        return not same and growing
-
-    @staticmethod
-    def is_overlapping(pre_stroke: 'Stroke', stroke: 'Stroke'):
-        assert pre_stroke.direction == stroke.direction
-        diff = stroke.fractal_start.fractal_value - pre_stroke.fractal_end.fractal_value
-        return diff <= 0 if stroke.direction == Direction.UP else diff >= 0
 
     @property
     def high(self):
@@ -91,5 +71,17 @@ class Stroke(ChanBar):
     def low(self):
         return self.low_fractal().fractal_value
 
+    @property
+    def len(self):
+        return self._len
+
+    @property
+    def index(self):
+        return self._index
+
+    @property
+    def direction(self):
+        return self._direction
+
     def __str__(self):
-        return f'【笔{self.index} 长度{self.len} 方向{self.direction.name} 两端:{self.fractal_start}->{self.fractal_end}】'
+        return f'【笔{self._index} 长度{self._len} 方向{self._direction.name} 两端:{self.fractal_start}->{self.fractal_end}】'

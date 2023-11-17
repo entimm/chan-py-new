@@ -1,27 +1,26 @@
 from typing import Optional
 
 from data_process.const import Direction, SegmentStatus
-from data_process.element.abs_bar import ChanBar
-from data_process.element.stroke import Stroke
+from data_process.element.abs_stroke import AbsStroke
 from logger import logger
 
 
-class Segment(ChanBar):
-    def __init__(self, index, stroke: Stroke):
-        self.stroke_list: list[Stroke] = []
+class Segment(AbsStroke):
+    def __init__(self, index, stroke: AbsStroke):
+        self.stroke_list: list[AbsStroke] = []
 
-        self.index = index
+        self._index = index
 
-        self.direction = Direction.INIT
+        self._direction = Direction.INIT
 
-        self.len = 0
+        self._len = 0
 
         self.status = SegmentStatus.INIT
 
         # 含有至高点的笔
-        self.top_stroke: Optional[Stroke] = None
+        self.top_stroke: Optional[AbsStroke] = None
         # 含有至低点的笔
-        self.bottom_stroke: Optional[Stroke] = None
+        self.bottom_stroke: Optional[AbsStroke] = None
 
         # 是否确认
         self.is_ok = False
@@ -32,10 +31,10 @@ class Segment(ChanBar):
         logger.info(f'新线段诞生:{self}')
         self.add_stroke(stroke)
 
-    def add_stroke(self, stroke: Stroke):
+    def add_stroke(self, stroke: AbsStroke):
         logger.info(f'{self} add_stroke {stroke}')
-        if self.len == 0:
-            self.direction = stroke.direction
+        if self._len == 0:
+            self._direction = stroke.direction
             self.append(stroke)
             return
 
@@ -60,7 +59,7 @@ class Segment(ChanBar):
 
     def set_stroke_list(self, stroke_list):
         self.stroke_list = stroke_list
-        self.len = len(self.stroke_list)
+        self._len = len(self.stroke_list)
 
         self.pivot()
 
@@ -69,31 +68,31 @@ class Segment(ChanBar):
         用于确定第一条线段的的开头位置
         如果存在反向突破就变基
         """
-        rebase_stroke = self.back_stroke()
+        rebase_stroke = self.bottom_stroke if self._direction == Direction.UP else self.top_stroke
         self.set_stroke_list([stroke for stroke in self.stroke_list if stroke.index >= rebase_stroke.index])
-        self.direction = self.stroke_list[0].direction
+        self._direction = self.stroke_list[0].direction
 
         self.status = SegmentStatus.INIT
 
         logger.info(f'{self} rebase, start={self.stroke_list[0]}')
 
-    def append(self, stroke: Stroke):
+    def append(self, stroke: AbsStroke):
         self.stroke_list.append(stroke)
-        self.len = len(self.stroke_list)
+        self._len = len(self.stroke_list)
 
         self.pivot()
 
         self.update_vertex(stroke)
 
-    def check_if_add(self, stroke: Stroke):
+    def check_if_add(self, stroke: AbsStroke):
         """
         检测是否可以继续新增笔
         """
-        if self.len < 3:
+        if self._len < 3:
             return True
 
         # 一定是奇数个笔
-        if self.len % 2 == 0:
+        if self._len % 2 == 0:
             return True
 
         if self.status == SegmentStatus.INIT:
@@ -101,23 +100,23 @@ class Segment(ChanBar):
 
         return False
 
-    def update_vertex(self, stroke: Stroke):
+    def update_vertex(self, stroke: AbsStroke):
         """
         更新极点
         """
-        if self.len == 1:
+        if self._len == 1:
             self.top_stroke = stroke
             self.bottom_stroke = stroke
             return
 
-        if Stroke.high_vertex_higher(self.top_stroke, stroke):
+        if AbsStroke.high_vertex_higher(self.top_stroke, stroke):
             self.set_top_stroke(stroke)
-        if Stroke.low_vertex_lower(self.bottom_stroke, stroke):
+        if AbsStroke.low_vertex_lower(self.bottom_stroke, stroke):
             self.set_bottom_stroke(stroke)
 
-    def set_top_stroke(self, stroke: Stroke):
+    def set_top_stroke(self, stroke: AbsStroke):
         if self.top_stroke.index != stroke.index:
-            if self.direction == Direction.UP:
+            if self._direction == Direction.UP:
                 self.status = SegmentStatus.GROWING
                 logger.info(f"{self} 延伸了 {self.top_stroke.high_fractal()} => {stroke.high_fractal()} | {self.top_stroke.index} => {stroke.index}")
             else:
@@ -125,39 +124,15 @@ class Segment(ChanBar):
                 logger.info(f"{self} 破坏了 {self.top_stroke.high_fractal()} => {stroke.high_fractal()} | {self.top_stroke.index} => {stroke.index}")
             self.top_stroke = stroke
 
-    def set_bottom_stroke(self, stroke: Stroke):
+    def set_bottom_stroke(self, stroke: AbsStroke):
         if self.bottom_stroke.index != stroke.index:
-            if self.direction == Direction.UP:
+            if self._direction == Direction.UP:
                 self.status = SegmentStatus.BREAK
                 logger.info(f"{self} 破坏了 {self.bottom_stroke.low_fractal()} => {stroke.low_fractal()} | {self.bottom_stroke.index} => {stroke.index}")
             else:
                 self.status = SegmentStatus.GROWING
                 logger.info(f"{self} 延伸了 {self.bottom_stroke.low_fractal()} => {stroke.low_fractal()} | {self.bottom_stroke.index} => {stroke.index}")
             self.bottom_stroke = stroke
-
-    def forward_stroke(self):
-        """
-        正向极点笔
-        """
-        return self.top_stroke if self.direction == Direction.UP else self.bottom_stroke
-
-    def back_stroke(self):
-        """
-        反向极点笔
-        """
-        return self.bottom_stroke if self.direction == Direction.UP else self.top_stroke
-
-    def forward_vertex(self):
-        """
-        正向极点
-        """
-        return self.top_stroke.high_fractal() if self.direction == Direction.UP else self.bottom_stroke.low_fractal()
-
-    def back_vertex(self):
-        """
-        反向极点
-        """
-        return self.bottom_stroke.low_fractal() if self.direction == Direction.UP else self.top_stroke.high_fractal()
 
     @staticmethod
     def top_vertex_higher(pre_segment: 'Segment', last_segment: 'Segment'):
@@ -194,27 +169,54 @@ class Segment(ChanBar):
         if len(self.stroke_list) > 0:
             stroke_desc = f'{self.stroke_list[0].index}->{self.stroke_list[-1].index}'
 
-        return f"【线段{self.index} 方向 {self.direction.name} 长度{self.len} 状态:{self.status.name} 笔:{stroke_desc}】"
+        return f"【线段{self._index} 方向 {self._direction.name} 长度{self._len} 状态:{self.status.name} 笔:{stroke_desc}】"
 
     def growing(self, stroke):
-        if self.direction == Direction.UP and stroke.direction == Direction.DOWN:
-            return stroke.fractal_end.fractal_value <= self.back_vertex().fractal_value
-        if self.direction == Direction.DOWN and stroke.direction == Direction.UP:
-            return stroke.fractal_end.fractal_value >= self.back_vertex().fractal_value
+        # 反向极点
+        back_vertex = self.bottom_stroke.low_fractal() if self._direction == Direction.UP else self.top_stroke.high_fractal()
+
+        if self._direction == Direction.UP and stroke.direction == Direction.DOWN:
+            return stroke.low <= back_vertex.fractal_value
+        if self._direction == Direction.DOWN and stroke.direction == Direction.UP:
+            return stroke.high >= back_vertex.fractal_value
         return True
 
     def pivot(self):
-        if self.len >= 11:
-            self.is_trend_1f = Stroke.is_overlapping(self.stroke_list[0], self.stroke_list[-1])
+        if self._len >= 11:
+            self.is_trend_1f = AbsStroke.is_overlapping(self.stroke_list[0], self.stroke_list[-1])
+
+    @property
+    def len(self):
+        return self._len
+
+    @property
+    def direction(self):
+        return self._direction
+
+    @property
+    def index(self):
+        return self._index
 
     @property
     def high(self):
-        stroke = self.stroke_list[-1] if self.direction ==  Direction.UP else self.stroke_list[0]
+        stroke = self.stroke_list[-1] if self._direction ==  Direction.UP else self.stroke_list[0]
 
         return stroke.high
 
     @property
     def low(self):
-        stroke = self.stroke_list[0] if self.direction ==  Direction.UP else self.stroke_list[-1]
+        stroke = self.stroke_list[0] if self._direction ==  Direction.UP else self.stroke_list[-1]
 
         return stroke.low
+
+    def high_fractal(self):
+        if self._direction == Direction.UP:
+            return self.stroke_list[-1].high_fractal()
+        else:
+            return self.stroke_list[0].high_fractal()
+
+    def low_fractal(self):
+        if self._direction == Direction.UP:
+            return self.stroke_list[0].low_fractal()
+        else:
+            return self.stroke_list[-1].low_fractal()
