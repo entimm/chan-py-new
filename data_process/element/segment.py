@@ -68,9 +68,13 @@ class Segment(AbsStroke):
         用于确定第一条线段的的开头位置
         如果存在反向突破就变基
         """
-        rebase_stroke = self.bottom_stroke if self._direction == Direction.UP else self.top_stroke
-        self.set_stroke_list([stroke for stroke in self.stroke_list if stroke.index >= rebase_stroke.index])
+        rebase_stroke = self.top_stroke if self._direction == Direction.UP else self.bottom_stroke
+        self.set_stroke_list([stroke for stroke in self.stroke_list if stroke.index > rebase_stroke.index])
         self._direction = self.stroke_list[0].direction
+
+        self.bottom_stroke, self.top_stroke = self.stroke_list[0], self.stroke_list[-1]
+        if self._direction == Direction.DOWN:
+            self.bottom_stroke, self.top_stroke = self.top_stroke, self.bottom_stroke
 
         self.status = SegmentStatus.INIT
 
@@ -97,6 +101,9 @@ class Segment(AbsStroke):
 
         if self.status == SegmentStatus.INIT:
             return self.growing(stroke)
+
+        if self.status == SegmentStatus.BREAK:
+            return True
 
         return False
 
