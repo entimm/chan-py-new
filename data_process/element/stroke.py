@@ -11,9 +11,9 @@ class Stroke(AbsStroke):
 
     def __init__(self, index, fractal_start: BarUnion, fractal_end: Optional[BarUnion]):
         # 笔头
-        self.fractal_start: BarUnion = fractal_start
+        self._fractal_start: BarUnion = fractal_start
         # 笔尾
-        self.fractal_end: BarUnion = fractal_end
+        self._fractal_end: BarUnion = fractal_end
         # 长度
         self._len = 0
         if fractal_end is not None:
@@ -34,7 +34,7 @@ class Stroke(AbsStroke):
         """
         设置笔头
         """
-        self.fractal_start = cur_fractal
+        self._fractal_start = cur_fractal
         self._direction = self.__cal_direction()
         logger.info(f'{self}设置笔首{cur_fractal}')
 
@@ -42,26 +42,14 @@ class Stroke(AbsStroke):
         """
         设置笔尾
         """
-        self.fractal_end = cur_fractal
-        self._len = 0 if cur_fractal is None else cur_fractal.index - self.fractal_start.index
+        self._fractal_end = cur_fractal
+        self._len = 0 if cur_fractal is None else cur_fractal.index - self._fractal_start.index
         logger.info(f'{self}设置笔尾{cur_fractal}')
 
         self.waiting_process = True
 
     def __cal_direction(self):
-        return Direction.UP if self.fractal_start.fractal_type == FractalType.BOTTOM else Direction.DOWN
-
-    def high_fractal(self):
-        if self._direction == Direction.UP:
-            return self.fractal_end
-        else:
-            return self.fractal_start
-
-    def low_fractal(self):
-        if self._direction == Direction.UP:
-            return self.fractal_start
-        else:
-            return self.fractal_end
+        return Direction.UP if self._fractal_start.fractal_type == FractalType.BOTTOM else Direction.DOWN
 
     @property
     def high(self):
@@ -83,5 +71,13 @@ class Stroke(AbsStroke):
     def direction(self):
         return self._direction
 
+    @property
+    def fractal_start(self):
+        return self._fractal_start
+
+    @property
+    def fractal_end(self):
+        return self._fractal_end
+
     def __str__(self):
-        return f'【笔{self._index} 长度{self._len} 方向{self._direction.name} 两端:{self.fractal_start}->{self.fractal_end}】'
+        return f'【笔{self._index} 长度{self._len} 方向{self._direction.name} 两端:{self._fractal_start}->{self._fractal_end}】'

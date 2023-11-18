@@ -35,7 +35,7 @@ class SegmentManager:
         由于笔会生长，所以相同的笔会返回进来
         """
         if last_segment.stroke_list[-1].index == stroke.index:
-            logger.info(f'线段同笔更新')
+            logger.info(f'线段同笔更新{last_segment}')
 
             if len(self.list) >= 2 and last_segment.len == 1:
                 pre_segment = self.list[-2]

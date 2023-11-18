@@ -43,7 +43,7 @@ class BaostockFetcher(Fetcher):
             PeriodEnum.F5: '5',
             PeriodEnum.F15: '15',
             PeriodEnum.F30: '30',
-            PeriodEnum.F60: '60',
+            PeriodEnum.H: '60',
 
             PeriodEnum.D: 'd',
             PeriodEnum.W: 'w',

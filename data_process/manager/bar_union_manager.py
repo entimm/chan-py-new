@@ -1,6 +1,5 @@
 from typing import List, Optional
 
-from common import func_utils
 from data_process.element.bar import Bar
 from data_process.element.bar_union import BarUnion
 from data_process.const import CompareRelation, Direction, FractalType
@@ -36,7 +35,8 @@ class BarUnionManager:
         """
         尝试合并
         """
-        if not func_utils.is_time_valid(pre_bar_union.time_end, cur_bar.time): return
+        if cur_bar.index <= pre_bar_union.end: 
+            return
 
         compare_relation = self.compare(pre_bar_union, cur_bar)
 

@@ -216,14 +216,14 @@ class Segment(AbsStroke):
 
         return stroke.low
 
-    def high_fractal(self):
+    def fractal_start(self):
         if self._direction == Direction.UP:
-            return self.stroke_list[-1].high_fractal()
+            return self.stroke_list[0].low_fractal()
         else:
             return self.stroke_list[0].high_fractal()
 
-    def low_fractal(self):
+    def fractal_end(self):
         if self._direction == Direction.UP:
-            return self.stroke_list[0].low_fractal()
+            return self.stroke_list[-1].high_fractal()
         else:
             return self.stroke_list[-1].low_fractal()

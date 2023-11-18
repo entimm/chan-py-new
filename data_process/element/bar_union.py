@@ -7,8 +7,8 @@ from data_process.element.abs_bar import AbsBar
 
 class BarUnion(AbsBar):
     def __init__(self, index, bar: Bar, direction=Direction.INIT, fractal_type=FractalType.NOTHING):
-        self.time_start = bar.time
-        self.time_end = bar.time
+        self.start = bar.index
+        self.end = bar.index
         self._high = bar.high
         self._low = bar.low
 
@@ -17,11 +17,11 @@ class BarUnion(AbsBar):
         # 分型类型
         self.fractal_type = fractal_type
         # 分型时间
-        self.fractal_time = None
+        self.fractal_index = 0
         # 分型值
         self.fractal_value = 0
 
-        self.index = index
+        self._index = index
 
         self.next: Optional[BarUnion] = None
 
@@ -31,7 +31,7 @@ class BarUnion(AbsBar):
         """
         执行合并操作
         """
-        self.time_end = bar.time
+        self.end = bar.index
         self.bar_list.append(bar)
         # 上涨趋势取双高
         if self.direction == Direction.UP:
@@ -53,30 +53,34 @@ class BarUnion(AbsBar):
         if self.direction == Direction.UP:
             for bar in self.bar_list[::-1]:
                 if self._high == bar.high:
-                    return bar.time, bar.high
+                    return bar.index, bar.high
 
         if self.direction == Direction.DOWN:
             for bar in self.bar_list[::-1]:
                 if self._low == bar.low:
-                    return bar.time, bar.low
+                    return bar.index, bar.low
 
     def set_fractal(self, fractal_type: FractalType):
         self.fractal_type = fractal_type
-        self.fractal_time, self.fractal_value = self.get_key_pos()
+        self.fractal_index, self.fractal_value = self.get_key_pos()
 
     def is_fractal(self):
         return self.fractal_type in [FractalType.TOP, FractalType.BOTTOM]
 
     def __str__(self):
         if self.fractal_type == FractalType.NOTHING:
-            return f'【合K:{self.time_start}->{self.time_end}】'
+            return f'【合K:{self.start}->{self.end}】'
         if self.fractal_type == FractalType.TOP:
-            return f'【顶K:{self.fractal_time}】'
+            return f'【顶K:{self.fractal_index}】'
         if self.fractal_type == FractalType.BOTTOM:
-            return f'【底K:{self.fractal_time}】'
+            return f'【底K:{self.fractal_index}】'
 
     def __eq__(self, other):
-        return self.index == other.index
+        return self._index == other.index
+
+    @property
+    def index(self):
+        return self._index
 
     @property
     def high(self):

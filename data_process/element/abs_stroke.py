@@ -10,20 +10,29 @@ class AbsStroke(AbsBar):
         return 0
 
     @property
-    def index(self):
-        return 0
-
-    @property
     def direction(self):
         return Direction.INIT
 
-    @abstractmethod
     def high_fractal(self):
-        pass
+        if self.direction == Direction.UP:
+            return self.fractal_end
+        else:
+            return self.fractal_start
 
-    @abstractmethod
     def low_fractal(self):
-        pass
+        if self.direction == Direction.UP:
+            return self.fractal_start
+        else:
+            return self.fractal_end
+
+    @property
+    def fractal_start(self):
+        return None
+
+    @property
+    def fractal_end(self):
+        return None
+
 
     @staticmethod
     def high_vertex_higher(pre_stroke: 'AbsStroke', last_stroke: 'AbsStroke'):
