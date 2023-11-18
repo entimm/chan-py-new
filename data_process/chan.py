@@ -2,7 +2,7 @@ import config
 from data_fetch import manager
 from data_fetch.fetcher import Fetcher
 from data_process.element.bar import Bar
-from data_process.kline import Kline
+from data_process.element.kline import Kline
 from data_process.manager.bar_union_manager import BarUnionManager
 from data_process.manager.segment_manager import SegmentManager
 from data_process.manager.stroke_manager import StrokeManager
@@ -43,11 +43,14 @@ class Chan:
 
     def load(self):
         while self.i < config.step_skip:
-            self.step_load()
+            if not self.step_load():
+                break
 
     def step_load(self):
         if self.i >= len(self.data_list):
-            return
+            return False
 
         self.add_kl(self.data_list[self.i])
         self.i += 1
+
+        return True

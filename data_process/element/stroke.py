@@ -7,21 +7,16 @@ from logger import logger
 
 
 class Stroke(AbsStroke):
-    direction: Direction
-
     def __init__(self, index, fractal_start: BarUnion, fractal_end: Optional[BarUnion]):
+        super().__init__(index)
         # 笔头
         self._fractal_start: BarUnion = fractal_start
         # 笔尾
         self._fractal_end: BarUnion = fractal_end
-        # 长度
-        self._len = 0
         if fractal_end is not None:
             self._len = fractal_end.index - fractal_start.index
         # 是否确认
         self.is_ok = False
-
-        self._index = index
 
         self._direction = self.__cal_direction()
 
@@ -58,18 +53,6 @@ class Stroke(AbsStroke):
     @property
     def low(self):
         return self.low_fractal().fractal_value
-
-    @property
-    def len(self):
-        return self._len
-
-    @property
-    def index(self):
-        return self._index
-
-    @property
-    def direction(self):
-        return self._direction
 
     @property
     def fractal_start(self):

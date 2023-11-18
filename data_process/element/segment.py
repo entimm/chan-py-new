@@ -7,13 +7,10 @@ from logger import logger
 
 class Segment(AbsStroke):
     def __init__(self, index, stroke: AbsStroke):
+        super().__init__(index)
         self.stroke_list: list[AbsStroke] = []
 
         self._index = index
-
-        self._direction = Direction.INIT
-
-        self._len = 0
 
         self.status = SegmentStatus.INIT
 
@@ -193,26 +190,14 @@ class Segment(AbsStroke):
             self.is_trend_1f = AbsStroke.is_overlapping(self.stroke_list[0], self.stroke_list[-1])
 
     @property
-    def len(self):
-        return self._len
-
-    @property
-    def direction(self):
-        return self._direction
-
-    @property
-    def index(self):
-        return self._index
-
-    @property
     def high(self):
-        stroke = self.stroke_list[-1] if self._direction ==  Direction.UP else self.stroke_list[0]
+        stroke = self.stroke_list[-1] if self._direction == Direction.UP else self.stroke_list[0]
 
         return stroke.high
 
     @property
     def low(self):
-        stroke = self.stroke_list[0] if self._direction ==  Direction.UP else self.stroke_list[-1]
+        stroke = self.stroke_list[0] if self._direction == Direction.UP else self.stroke_list[-1]
 
         return stroke.low
 

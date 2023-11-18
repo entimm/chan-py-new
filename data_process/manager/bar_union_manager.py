@@ -1,6 +1,6 @@
 from typing import List, Optional
 
-from data_process.element.bar import Bar
+from data_process.element.abs_bar import AbsBar
 from data_process.element.bar_union import BarUnion
 from data_process.const import CompareRelation, Direction, FractalType
 
@@ -9,7 +9,7 @@ class BarUnionManager:
     def __init__(self):
         self.list: List[BarUnion] = []
 
-    def add_bar(self, new_bar: Bar):
+    def add_bar(self, new_bar: AbsBar):
         """
         投喂k线，生成合并k线，返回生成的分型
         """
@@ -31,7 +31,7 @@ class BarUnionManager:
 
         self.list.append(bar_union)
 
-    def try_union(self, pre_bar_union: BarUnion, cur_bar: Bar):
+    def try_union(self, pre_bar_union: BarUnion, cur_bar: AbsBar):
         """
         尝试合并
         """
@@ -70,7 +70,7 @@ class BarUnionManager:
 
         self.append(new_bar_union)
 
-    def compare(self, bar_union: BarUnion, bar: Bar):
+    def compare(self, bar_union: BarUnion, bar: AbsBar):
         """
         通过差值进行比较，进而得到bar_union和bar之间的关系
         """

@@ -2,9 +2,12 @@ from abc import abstractmethod, ABC
 
 
 class AbsBar(ABC):
+    def __init__(self, index):
+        self._index = index
+
     @property
     def index(self):
-        return 0
+        return self._index
 
     @property
     def high(self):

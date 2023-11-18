@@ -5,13 +5,18 @@ from data_process.element.abs_bar import AbsBar
 
 
 class AbsStroke(AbsBar):
+    def __init__(self, index):
+        super().__init__(index)
+        self._len = 0
+        self._direction = Direction.INIT
+
     @property
     def len(self):
-        return 0
+        return self._len
 
     @property
     def direction(self):
-        return Direction.INIT
+        return self._direction
 
     def high_fractal(self):
         if self.direction == Direction.UP:

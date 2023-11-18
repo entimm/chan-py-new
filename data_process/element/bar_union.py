@@ -1,12 +1,12 @@
 from typing import List, Optional
 
-from data_process.element.bar import Bar
 from data_process.const import Direction, FractalType
 from data_process.element.abs_bar import AbsBar
 
 
 class BarUnion(AbsBar):
-    def __init__(self, index, bar: Bar, direction=Direction.INIT, fractal_type=FractalType.NOTHING):
+    def __init__(self, index, bar: AbsBar, direction=Direction.INIT, fractal_type=FractalType.NOTHING):
+        super().__init__(index)
         self.start = bar.index
         self.end = bar.index
         self._high = bar.high
@@ -21,13 +21,11 @@ class BarUnion(AbsBar):
         # 分型值
         self.fractal_value = 0
 
-        self._index = index
-
         self.next: Optional[BarUnion] = None
 
-        self.bar_list: List[Bar] = [bar]
+        self.bar_list: List[AbsBar] = [bar]
 
-    def perform_union(self, bar: Bar):
+    def perform_union(self, bar: AbsBar):
         """
         执行合并操作
         """
@@ -77,10 +75,6 @@ class BarUnion(AbsBar):
 
     def __eq__(self, other):
         return self._index == other.index
-
-    @property
-    def index(self):
-        return self._index
 
     @property
     def high(self):

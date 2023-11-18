@@ -1,4 +1,3 @@
-import config
 from data_process import chan_config
 from data_process.element.bar_union import BarUnion
 from data_process.const import FractalType
