@@ -1,4 +1,4 @@
-import config
+from data_process import chan_config
 from data_process.chan import Chan
 
 
@@ -47,11 +47,11 @@ def data(chan: Chan):
     } for item in chan.segment_manager.list if item.len >= 3]
 
     data = {'bar_list': bar_list}
-    if config.output_union: data['bar_union_list'] = bar_union_list
-    if config.output_fractal: data['fractal_list'] = fractal_list
-    if config.output_stroke: data['stroke_list'] = stroke_list
-    if config.output_segment: data['segment_list'] = segment_list
+    if chan_config.output_union: data['bar_union_list'] = bar_union_list
+    if chan_config.output_fractal: data['fractal_list'] = fractal_list
+    if chan_config.output_stroke: data['stroke_list'] = stroke_list
+    if chan_config.output_segment: data['segment_list'] = segment_list
 
-    data['output_text'] = config.output_text
+    data['output_text'] = chan_config.output_text
 
     return data

@@ -1,5 +1,3 @@
-from abc import abstractmethod
-
 from data_process.const import Direction
 from data_process.element.abs_bar import AbsBar
 

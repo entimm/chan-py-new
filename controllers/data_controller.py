@@ -1,11 +1,14 @@
 from flask import Blueprint, render_template, request
 
+import config
+from data_fetch import manager as fetch_manager
+from data_fetch.fetcher import Fetcher
 from data_process.chan_manager import ChanManager
 from common.const import PeriodEnum
 from data_process import output
 from data_process.chan import Chan
 
-data_blueprint = Blueprint('data', __name__)
+data_blueprint = Blueprint('resources', __name__)
 
 chan_manager = ChanManager()
 
@@ -27,8 +30,11 @@ def get_data():
     except KeyError:
         period = PeriodEnum.D
 
-    chan = Chan(ticker, start, end, period)
-    chan.load()
+    fetcher_cls = fetch_manager.get_fetcher(config.data_src)
+    fetcher: Fetcher = fetcher_cls(ticker=ticker, start=start, end=end, period=period)
+
+    chan = Chan()
+    chan.load(fetcher.get_kl_data())
     chan_id = chan_manager.register(chan)
 
     data = output.data(chan)
@@ -43,7 +49,7 @@ def update(chan_id):
     if chan is None:
         return []
 
-    chan.step_load()
+    # chan.append([])
 
     data = output.data(chan)
     data['chan_id'] = chan_id
