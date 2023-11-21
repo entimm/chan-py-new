@@ -26,167 +26,169 @@
 <body>
 <div id="chart"></div>
 <script>
-  var output_text = true
-  var chart = klinecharts.init('chart', {
-    timezone: 'Asia/Shanghai',
-    customApi: {
-      formatDate: function (dateTimeFormat, timestamp, format, type) {
-        return timestamp
-      }
-    }
-  })
-  chart._chartStore._timeScaleStore.setBarSpaceLimitConfig(0.01, 20)
-  // chart.createIndicator('MA', false, { id: 'candle_pane' })
-  chart.createIndicator('VOL')
-  chart.createIndicator('MACD')
-  chart.setStyles({
-    // 网格线
-    grid: {
-      show: true,
-      horizontal: {
-        show: true,
-        size: 1,
-        color: '#E6E6E6',
-        style: 'solid',
-      },
-      vertical: {
-        show: false,
-        size: 0,
-        color: '#E6E6E6',
-        style: 'solid',
-      }
-    },
-    candle: {
-      // 蜡烛图类型 'candle_solid'|'candle_stroke'|'candle_up_stroke'|'candle_down_stroke'|'ohlc'|'area'
-      type: 'candle_solid',
-      bar: {
-        upColor: '#F21414',
-        downColor: '#08B536',
-        noChangeColor: '#888888',
-        upBorderColor: '#F21414',
-        downBorderColor: '#08B536',
-        noChangeBorderColor: '#888888',
-        upWickColor: '#F21414',
-        downWickColor: '#08B536',
-        noChangeWickColor: '#888888'
-      },
-    },
-    indicator: {
-      bars: [{
-        // 'fill' | 'stroke' | 'stroke_fill'
-        style: 'fill',
-        // 'solid' | 'dashed'
-        borderStyle: 'solid',
-        borderSize: 1,
-        borderDashedValue: [2, 2],
-        upColor: '#F21414',
-        downColor: '#08B536',
-        noChangeColor: '#888888'
-      }],
-      lastValueMark: {
-        show: true,
-      },
-    }
-  });
-
-  var chanId = '';
-  var overlayGroup = {}
-
-  function addOverlay(item) {
-    if (overlayGroup[item.groupId]) {
-        overlayGroup[item.groupId].push(item.id);
-    } else {
-        overlayGroup[item.groupId] = [item.id];
-    }
-    chart.createOverlay(item)
-  }
-
-  function removeRecentOverlay() {
-    for (let key in overlayGroup) {
-      if (overlayGroup[key].length >= 1) {
-        chart.removeOverlay(overlayGroup[key].pop())
-      }
-    }
-  }
-
-  chart._chartStore.getTimeScaleStore().zoom(1000)
-  fetch(`/chart/data`).then(response => response.json())
-    .then(data => {
-      output_text = data.output_text
-      chartDataList = data.bar_list
-      chart.applyNewData(chartDataList)
-
-      chanId = data.chan_id
-
-      data.bar_union_list?.forEach(item => addOverlay(barUnionOverlayData(item)))
-      data.fractal_list?.forEach(item => addOverlay(fractalOverlayData(item)))
-      data.stroke_list?.forEach(item => addOverlay(strokeOverlayData(item)))
-      data.stroke_list?.forEach(item => addOverlay(strokeBarOverlayData(item)))
-      data.segment_list?.forEach(item => addOverlay(segmentOverlayData(item)))
-
-      var intervalId = setInterval(intervalUpdate, 1000);
-      clearInterval(intervalId);
+    var output_text = true
+    var chart = klinecharts.init('chart', {
+        timezone: 'Asia/Shanghai',
+        customApi: {
+            formatDate: function (dateTimeFormat, timestamp, format, type) {
+                return timestamp
+            }
+        }
+    })
+    chart._chartStore._timeScaleStore.setBarSpaceLimitConfig(0.01, 20)
+    // chart.createIndicator('MA', false, { id: 'candle_pane' })
+    chart.createIndicator('VOL')
+    chart.createIndicator('MACD')
+    chart.setStyles({
+        // 网格线
+        grid: {
+            show: true,
+            horizontal: {
+                show: true,
+                size: 1,
+                color: '#E6E6E6',
+                style: 'solid',
+            },
+            vertical: {
+                show: false,
+                size: 0,
+                color: '#E6E6E6',
+                style: 'solid',
+            }
+        },
+        candle: {
+            // 蜡烛图类型 'candle_solid'|'candle_stroke'|'candle_up_stroke'|'candle_down_stroke'|'ohlc'|'area'
+            type: 'candle_solid',
+            bar: {
+                upColor: '#F21414',
+                downColor: '#08B536',
+                noChangeColor: '#888888',
+                upBorderColor: '#F21414',
+                downBorderColor: '#08B536',
+                noChangeBorderColor: '#888888',
+                upWickColor: '#F21414',
+                downWickColor: '#08B536',
+                noChangeWickColor: '#888888'
+            },
+        },
+        indicator: {
+            bars: [{
+                // 'fill' | 'stroke' | 'stroke_fill'
+                style: 'fill',
+                // 'solid' | 'dashed'
+                borderStyle: 'solid',
+                borderSize: 1,
+                borderDashedValue: [2, 2],
+                upColor: '#F21414',
+                downColor: '#08B536',
+                noChangeColor: '#888888'
+            }],
+            lastValueMark: {
+                show: true,
+            },
+        }
     });
-  function intervalUpdate() {
-    fetch(`/chart/update/${chanId}`).then(response => response.json())
-      .then(data => {
-        chartDataList = data.bar_list
-        for (const dataKey in chartDataList) {
-          chart.updateData(chartDataList[dataKey])
+
+    var chanId = '';
+    var overlayGroup = {}
+
+    function addOverlay(item) {
+        if (overlayGroup[item.groupId]) {
+            overlayGroup[item.groupId].push(item.id);
+        } else {
+            overlayGroup[item.groupId] = [item.id];
         }
+        chart.createOverlay(item)
+    }
 
-        if (chartDataList.length > 0) {
-          removeRecentOverlay()
+    function removeRecentOverlay() {
+        for (let key in overlayGroup) {
+            if (overlayGroup[key].length >= 1) {
+                chart.removeOverlay(overlayGroup[key].pop())
+            }
         }
+    }
 
-        data.bar_union_list?.forEach(function (item) {
-          item = barUnionOverlayData(item)
-          if (chart.getOverlayById(item.id) == null) {
-            addOverlay(item)
-          } else {
-            chart.overrideOverlay(item)
-          }
-        })
-        data.fractal_list?.forEach(function (item) {
-          item = fractalOverlayData(item)
-          if (chart.getOverlayById(item.id) == null) {
-            addOverlay(item)
-          } else {
-            chart.overrideOverlay(item)
-          }
-        })
-        data.stroke_list?.forEach(function (item) {
-          item = strokeOverlayData(item)
-          if (chart.getOverlayById(item.id) == null) {
-            addOverlay(item)
-          } else {
-            chart.overrideOverlay(item)
-          }
-        })
-        data.stroke_list?.forEach(function (item) {
-          item = strokeBarOverlayData(item)
-          if (chart.getOverlayById(item.id) == null) {
-            addOverlay(item)
-          } else {
-            chart.overrideOverlay(item)
-          }
-        })
-        data.segment_list?.forEach(function (item) {
-          item = segmentOverlayData(item)
-          if (chart.getOverlayById(item.id) == null) {
-            addOverlay(item)
-          } else {
-            chart.overrideOverlay(item)
-          }
-        })
-      })
-  }
+    chart._chartStore.getTimeScaleStore().zoom(1000)
+    fetch(`/chart/data`).then(response => response.json())
+        .then(data => {
+            output_text = data.output_text
+            chartDataList = data.bar_list
+            chart.applyNewData(chartDataList)
 
-  function resizeChart() {
-    chart.resize()
-  }
-  window.addEventListener('resize', resizeChart);
-  window.addEventListener('load', resizeChart);
+            chanId = data.chan_id
+
+            data.bar_union_list?.forEach(item => addOverlay(barUnionOverlayData(item)))
+            data.fractal_list?.forEach(item => addOverlay(fractalOverlayData(item)))
+            data.stroke_list?.forEach(item => addOverlay(strokeOverlayData(item)))
+            data.stroke_list?.forEach(item => addOverlay(strokeBarOverlayData(item)))
+            data.segment_list?.forEach(item => addOverlay(segmentOverlayData(item)))
+
+            var intervalId = setInterval(intervalUpdate, 1000);
+            clearInterval(intervalId);
+        });
+
+    function intervalUpdate() {
+        fetch(`/chart/update/${chanId}`).then(response => response.json())
+            .then(data => {
+                chartDataList = data.bar_list
+                for (const dataKey in chartDataList) {
+                    chart.updateData(chartDataList[dataKey])
+                }
+
+                if (chartDataList.length > 0) {
+                    removeRecentOverlay()
+                }
+
+                data.bar_union_list?.forEach(function (item) {
+                    item = barUnionOverlayData(item)
+                    if (chart.getOverlayById(item.id) == null) {
+                        addOverlay(item)
+                    } else {
+                        chart.overrideOverlay(item)
+                    }
+                })
+                data.fractal_list?.forEach(function (item) {
+                    item = fractalOverlayData(item)
+                    if (chart.getOverlayById(item.id) == null) {
+                        addOverlay(item)
+                    } else {
+                        chart.overrideOverlay(item)
+                    }
+                })
+                data.stroke_list?.forEach(function (item) {
+                    item = strokeOverlayData(item)
+                    if (chart.getOverlayById(item.id) == null) {
+                        addOverlay(item)
+                    } else {
+                        chart.overrideOverlay(item)
+                    }
+                })
+                data.stroke_list?.forEach(function (item) {
+                    item = strokeBarOverlayData(item)
+                    if (chart.getOverlayById(item.id) == null) {
+                        addOverlay(item)
+                    } else {
+                        chart.overrideOverlay(item)
+                    }
+                })
+                data.segment_list?.forEach(function (item) {
+                    item = segmentOverlayData(item)
+                    if (chart.getOverlayById(item.id) == null) {
+                        addOverlay(item)
+                    } else {
+                        chart.overrideOverlay(item)
+                    }
+                })
+            })
+    }
+
+    function resizeChart() {
+        chart.resize()
+    }
+
+    window.addEventListener('resize', resizeChart);
+    window.addEventListener('load', resizeChart);
 </script>
 </body>
 </html>
