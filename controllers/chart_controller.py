@@ -8,18 +8,18 @@ from common.const import PeriodEnum
 from chan import output
 from chan.chan import Chan
 
-data_blueprint = Blueprint('data', __name__)
+blueprint = Blueprint('chart', __name__)
 
 chan_manager = ChanManager()
 
 
-@data_blueprint.route('/')
-def get_index():
-    return render_template('index.html')
+@blueprint.route('/chart')
+def view():
+    return render_template('chart.html')
 
 
-@data_blueprint.route('/data')
-def get_data():
+@blueprint.route('/chart/data')
+def data():
     ticker = request.args.get('ticker', 'sh.000001')
     start = request.args.get('start', '2020-01-01')
     end = request.args.get('end', '2023-09-30')
@@ -43,7 +43,7 @@ def get_data():
     return data
 
 
-@data_blueprint.route('/update/<chan_id>')
+@blueprint.route('/chart/update/<chan_id>')
 def update(chan_id):
     chan = chan_manager.get(chan_id)
     if chan is None:

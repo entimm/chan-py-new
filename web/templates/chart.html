@@ -110,7 +110,7 @@
   }
 
   chart._chartStore.getTimeScaleStore().zoom(1000)
-  fetch(`/data`).then(response => response.json())
+  fetch(`/chart/data`).then(response => response.json())
     .then(data => {
       output_text = data.output_text
       chartDataList = data.bar_list
@@ -128,7 +128,7 @@
       clearInterval(intervalId);
     });
   function intervalUpdate() {
-    fetch(`/update/${chanId}`).then(response => response.json())
+    fetch(`/chart/update/${chanId}`).then(response => response.json())
       .then(data => {
         chartDataList = data.bar_list
         for (const dataKey in chartDataList) {
