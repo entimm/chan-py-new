@@ -1,7 +1,7 @@
 from typing import Optional
 
-from data_process.const import Direction, SegmentStatus
-from data_process.element.abs_stroke import AbsStroke
+from chan.const import Direction, SegmentStatus
+from chan.element.abs_stroke import AbsStroke
 from logger import logger
 
 

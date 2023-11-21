@@ -1,7 +1,7 @@
 from typing import List, Optional
 
-from data_process.const import Direction, FractalType
-from data_process.element.abs_bar import AbsBar
+from chan.const import Direction, FractalType
+from chan.element.abs_bar import AbsBar
 
 
 class BarUnion(AbsBar):

@@ -1,8 +1,8 @@
 from typing import List
 
-from data_process.const import SegmentStatus, Direction
-from data_process.element.abs_stroke import AbsStroke
-from data_process.element.segment import Segment
+from chan.const import SegmentStatus, Direction
+from chan.element.abs_stroke import AbsStroke
+from chan.element.segment import Segment
 from logger import logger
 
 

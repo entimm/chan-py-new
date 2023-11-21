@@ -3,12 +3,12 @@ from flask import Blueprint, render_template, request
 import config
 from data_fetch import manager as fetch_manager
 from data_fetch.fetcher import Fetcher
-from data_process.chan_manager import ChanManager
+from chan.chan_manager import ChanManager
 from common.const import PeriodEnum
-from data_process import output
-from data_process.chan import Chan
+from chan import output
+from chan.chan import Chan
 
-data_blueprint = Blueprint('resources', __name__)
+data_blueprint = Blueprint('data', __name__)
 
 chan_manager = ChanManager()
 

@@ -1,7 +1,7 @@
 import uuid
 from typing import Optional
 
-from data_process.chan import Chan
+from chan.chan import Chan
 
 
 class ChanManager:

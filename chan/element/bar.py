@@ -1,5 +1,5 @@
-from data_process.element.abs_bar import AbsBar
-from data_process.element.kline import Kline
+from chan.element.abs_bar import AbsBar
+from chan.element.kline import Kline
 
 
 class Bar(AbsBar):

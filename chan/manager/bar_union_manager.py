@@ -1,8 +1,8 @@
 from typing import List, Optional
 
-from data_process.element.abs_bar import AbsBar
-from data_process.element.bar_union import BarUnion
-from data_process.const import CompareRelation, Direction, FractalType
+from chan.element.abs_bar import AbsBar
+from chan.element.bar_union import BarUnion
+from chan.const import CompareRelation, Direction, FractalType
 
 
 class BarUnionManager:

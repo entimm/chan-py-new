@@ -1,10 +1,10 @@
 from typing import List
 
-from data_process import chan_config
-from data_process.const import FractalType
-from data_process.element.bar_union import BarUnion
-from data_process.element.fractal import Fractal
-from data_process.element.stroke import Stroke
+from chan import chan_config
+from chan.const import FractalType
+from chan.element.bar_union import BarUnion
+from chan.element.fractal import Fractal
+from chan.element.stroke import Stroke
 from logger import logger
 
 

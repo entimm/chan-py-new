@@ -1,8 +1,8 @@
-from data_process.element.bar import Bar
-from data_process.element.kline import Kline
-from data_process.manager.bar_union_manager import BarUnionManager
-from data_process.manager.segment_manager import SegmentManager
-from data_process.manager.stroke_manager import StrokeManager
+from chan.element.bar import Bar
+from chan.element.kline import Kline
+from chan.manager.bar_union_manager import BarUnionManager
+from chan.manager.segment_manager import SegmentManager
+from chan.manager.stroke_manager import StrokeManager
 from logger import logger
 
 

@@ -1,5 +1,5 @@
-from data_process.const import Direction
-from data_process.element.abs_bar import AbsBar
+from chan.const import Direction
+from chan.element.abs_bar import AbsBar
 
 
 class AbsStroke(AbsBar):

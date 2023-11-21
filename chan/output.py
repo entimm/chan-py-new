@@ -1,5 +1,5 @@
-from data_process import chan_config
-from data_process.chan import Chan
+from chan import chan_config
+from chan.chan import Chan
 
 
 def data(chan: Chan):
