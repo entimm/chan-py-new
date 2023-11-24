@@ -71,9 +71,10 @@
 <script type="text/javascript" src="/static/klinecharts.min.js"></script>
 <script type="text/javascript" src="/static/klinecharts_overlay.js"></script>
 <script>
-    var data = {{data | safe }}
-    var output_text = data.output_text
-    var chartDataList = data.bar_list
+    var kline_list = {{ kline_list | safe }}
+    var chan_data = {{ chan_data | safe }}
+    var output_text = chan_data.output_text
+    var chartDataList = kline_list.map(convertKlineData)
 
     var chart = klinecharts.init('chart', {
         timezone: 'Asia/Shanghai',
@@ -161,16 +162,27 @@
 
     chart.applyNewData(chartDataList)
 
-    chanId = data.chan_id
+    chanId = chan_data.chan_id
 
-    data.bar_union_list?.forEach(item => addOverlay(barUnionOverlayData(item)))
-    data.fractal_list?.forEach(item => addOverlay(fractalOverlayData(item)))
-    data.stroke_list?.forEach(item => addOverlay(strokeOverlayData(item)))
-    data.stroke_list?.forEach(item => addOverlay(strokeBarOverlayData(item)))
-    data.segment_list?.forEach(item => addOverlay(segmentOverlayData(item)))
+    chan_data.bar_union_list?.forEach(item => addOverlay(barUnionOverlayData(item)))
+    chan_data.fractal_list?.forEach(item => addOverlay(fractalOverlayData(item)))
+    chan_data.stroke_list?.forEach(item => addOverlay(strokeOverlayData(item)))
+    chan_data.stroke_list?.forEach(item => addOverlay(strokeBarOverlayData(item)))
+    chan_data.segment_list?.forEach(item => addOverlay(segmentOverlayData(item)))
 
     function resizeChart() {
         chart.resize()
+    }
+
+    function convertKlineData(item) {
+        return {
+            timestamp: item.time,
+            open: item.open,
+            high: item.high,
+            low: item.low,
+            close: item.close,
+            volume: item.volume,
+        }
     }
 
     window.addEventListener('resize', resizeChart);

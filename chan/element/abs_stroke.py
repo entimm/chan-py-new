@@ -1,4 +1,4 @@
-from chan.const import Direction
+from chan.chan_const import Direction
 from chan.element.abs_bar import AbsBar
 
 

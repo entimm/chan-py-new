@@ -112,79 +112,84 @@
     chart._chartStore.getTimeScaleStore().zoom(1000)
     fetch(`/chart/data`).then(response => response.json())
         .then(data => {
-            output_text = data.output_text
-            chartDataList = data.bar_list
+            chartDataList = data.kline_list.map(convertKlineData);
+            output_text = data.chan_data.output_text
             chart.applyNewData(chartDataList)
 
             chanId = data.chan_id
 
-            data.bar_union_list?.forEach(item => addOverlay(barUnionOverlayData(item)))
-            data.fractal_list?.forEach(item => addOverlay(fractalOverlayData(item)))
-            data.stroke_list?.forEach(item => addOverlay(strokeOverlayData(item)))
-            data.stroke_list?.forEach(item => addOverlay(strokeBarOverlayData(item)))
-            data.segment_list?.forEach(item => addOverlay(segmentOverlayData(item)))
-
-            var intervalId = setInterval(intervalUpdate, 1000);
-            clearInterval(intervalId);
+            data.chan_data.bar_union_list?.forEach(item => addOverlay(barUnionOverlayData(item)))
+            data.chan_data.fractal_list?.forEach(item => addOverlay(fractalOverlayData(item)))
+            data.chan_data.stroke_list?.forEach(item => addOverlay(strokeOverlayData(item)))
+            data.chan_data.stroke_list?.forEach(item => addOverlay(strokeBarOverlayData(item)))
+            data.chan_data.segment_list?.forEach(item => addOverlay(segmentOverlayData(item)))
         });
 
-    function intervalUpdate() {
-        fetch(`/chart/update/${chanId}`).then(response => response.json())
-            .then(data => {
-                chartDataList = data.bar_list
-                for (const dataKey in chartDataList) {
-                    chart.updateData(chartDataList[dataKey])
-                }
+    function intervalUpdate(data) {
+        chartDataList = data.kline_list.map(convertKlineData);
+        for (const dataKey in chartDataList) {
+            chart.updateData(chartDataList[dataKey])
+        }
 
-                if (chartDataList.length > 0) {
-                    removeRecentOverlay()
-                }
+        if (chartDataList.length > 0) {
+            removeRecentOverlay()
+        }
 
-                data.bar_union_list?.forEach(function (item) {
-                    item = barUnionOverlayData(item)
-                    if (chart.getOverlayById(item.id) == null) {
-                        addOverlay(item)
-                    } else {
-                        chart.overrideOverlay(item)
-                    }
-                })
-                data.fractal_list?.forEach(function (item) {
-                    item = fractalOverlayData(item)
-                    if (chart.getOverlayById(item.id) == null) {
-                        addOverlay(item)
-                    } else {
-                        chart.overrideOverlay(item)
-                    }
-                })
-                data.stroke_list?.forEach(function (item) {
-                    item = strokeOverlayData(item)
-                    if (chart.getOverlayById(item.id) == null) {
-                        addOverlay(item)
-                    } else {
-                        chart.overrideOverlay(item)
-                    }
-                })
-                data.stroke_list?.forEach(function (item) {
-                    item = strokeBarOverlayData(item)
-                    if (chart.getOverlayById(item.id) == null) {
-                        addOverlay(item)
-                    } else {
-                        chart.overrideOverlay(item)
-                    }
-                })
-                data.segment_list?.forEach(function (item) {
-                    item = segmentOverlayData(item)
-                    if (chart.getOverlayById(item.id) == null) {
-                        addOverlay(item)
-                    } else {
-                        chart.overrideOverlay(item)
-                    }
-                })
-            })
+        data.chan_data.bar_union_list?.forEach(function (item) {
+            item = barUnionOverlayData(item)
+            if (chart.getOverlayById(item.id) == null) {
+                addOverlay(item)
+            } else {
+                chart.overrideOverlay(item)
+            }
+        })
+        data.chan_data.fractal_list?.forEach(function (item) {
+            item = fractalOverlayData(item)
+            if (chart.getOverlayById(item.id) == null) {
+                addOverlay(item)
+            } else {
+                chart.overrideOverlay(item)
+            }
+        })
+        data.chan_data.stroke_list?.forEach(function (item) {
+            item = strokeOverlayData(item)
+            if (chart.getOverlayById(item.id) == null) {
+                addOverlay(item)
+            } else {
+                chart.overrideOverlay(item)
+            }
+        })
+        data.chan_data.stroke_list?.forEach(function (item) {
+            item = strokeBarOverlayData(item)
+            if (chart.getOverlayById(item.id) == null) {
+                addOverlay(item)
+            } else {
+                chart.overrideOverlay(item)
+            }
+        })
+        data.chan_data.segment_list?.forEach(function (item) {
+            item = segmentOverlayData(item)
+            if (chart.getOverlayById(item.id) == null) {
+                addOverlay(item)
+            } else {
+                chart.overrideOverlay(item)
+            }
+        })
     }
 
     function resizeChart() {
         chart.resize()
+    }
+
+    function convertKlineData(item) {
+        return {
+            timestamp: item.time,
+            open: item.open,
+            high: item.high,
+            low: item.low,
+            close: item.close,
+            volume: item.volume,
+        }
     }
 
     window.addEventListener('resize', resizeChart);

@@ -1,6 +1,6 @@
 from typing import Optional
 
-from chan.const import Direction, SegmentStatus
+from chan.chan_const import Direction, SegmentStatus
 from chan.element.abs_stroke import AbsStroke
 from logger import logger
 

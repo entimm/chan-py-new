@@ -1,3 +1,4 @@
+from chan.chan_output import output
 from chan.element.bar import Bar
 from chan.element.kline import Kline
 from chan.manager.bar_union_manager import BarUnionManager
@@ -7,12 +8,15 @@ from logger import logger
 
 
 class Chan:
-    def __init__(self):
+    def __init__(self, data_list = None):
         self.data_list: list[Kline] = []
 
         self.bar_union_manager: BarUnionManager = BarUnionManager()
         self.stroke_manager: StrokeManager = StrokeManager()
         self.segment_manager: SegmentManager = SegmentManager()
+
+        if data_list:
+            self.load(data_list)
 
     def load(self, kl_data_list: list):
         for kl_data in kl_data_list:
@@ -32,4 +36,7 @@ class Chan:
 
     def append(self, kl_data):
         self._add_kl(Kline(kl_data))
+
+    def output(self):
+        return output(self)
 

@@ -1,7 +1,7 @@
 from typing import List
 
 from chan import chan_config
-from chan.const import FractalType
+from chan.chan_const import FractalType
 from chan.element.bar_union import BarUnion
 from chan.element.fractal import Fractal
 from chan.element.stroke import Stroke

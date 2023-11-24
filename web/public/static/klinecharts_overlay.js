@@ -135,7 +135,7 @@ function barUnionOverlayData(item) {
     name: 'chan-rect',
     groupId: 'barUnion',
     lock: true,
-    points: [item.begin, item.end],
+    points: [{timestamp: item.begin.time, value: item.begin.value}, {timestamp: item.end.time, value: item.end.value}],
     styles: {
       polygon: {
         color: 'rgba(128, 128, 0, 0.3)',
@@ -157,7 +157,7 @@ function fractalOverlayData(item) {
       'text': item.direction === 'TOP' ? '∇' : '∆',
     },
     lock: true,
-    points: [item],
+    points: [{timestamp: item.time, value: item.value}],
     styles: {
       text: {
         color: item.direction === 'TOP' ? '#800080' : '#0000FF',
@@ -177,7 +177,7 @@ function strokeOverlayData(item) {
     needDefaultPointFigure: false,
     needDefaultXAxisFigure: false,
     needDefaultYAxisFigure: false,
-    points: [item.begin, item.end],
+    points: [{timestamp: item.begin.time, value: item.begin.value}, {timestamp: item.end.time, value: item.end.value}],
     styles: {
       line: {
         color: '#000',
@@ -200,7 +200,7 @@ function strokeBarOverlayData(item) {
     groupId: 'strokeBar',
     lock: true,
     visible: false,
-    points: [item.begin, item.end],
+    points: [{timestamp: item.begin.time, value: item.begin.value}, {timestamp: item.end.time, value: item.end.value}],
     styles: {
       polygon: {
         color: item.direction === 'UP' ? 'rgba(232,7,7,0.3)' : 'rgba(10,145,6,0.3)',
@@ -223,7 +223,7 @@ function segmentOverlayData(item) {
     needDefaultPointFigure: false,
     needDefaultXAxisFigure: false,
     needDefaultYAxisFigure: false,
-    points: [item.begin, item.end],
+    points: [{timestamp: item.begin.time, value: item.begin.value}, {timestamp: item.end.time, value: item.end.value}],
     styles: {
       line: {
         color: !item.is_trend_1f ? '#de16a5' : '#1620de',

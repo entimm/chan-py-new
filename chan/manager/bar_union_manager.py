@@ -2,7 +2,7 @@ from typing import List, Optional
 
 from chan.element.abs_bar import AbsBar
 from chan.element.bar_union import BarUnion
-from chan.const import CompareRelation, Direction, FractalType
+from chan.chan_const import CompareRelation, Direction, FractalType
 
 
 class BarUnionManager:

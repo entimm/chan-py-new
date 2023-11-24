@@ -1,12 +1,12 @@
 from flask import Blueprint, render_template, request
 
 import config
-from data_fetch import manager as fetch_manager
-from data_fetch.fetcher import Fetcher
+from chan import chan_output
+from chan.chan import Chan
 from chan.chan_manager import ChanManager
 from common.const import PeriodEnum
-from chan import output
-from chan.chan import Chan
+from data_fetch import manager as fetch_manager
+from data_fetch.fetcher import Fetcher
 
 blueprint = Blueprint('chart', __name__)
 
@@ -32,26 +32,14 @@ def data():
 
     fetcher_cls = fetch_manager.get_fetcher(config.data_src)
     fetcher: Fetcher = fetcher_cls(ticker=ticker, start=start, end=end, period=period)
+    kline_list = list(fetcher.get_kl_data())
 
     chan = Chan()
-    chan.load(fetcher.get_kl_data())
+    chan.load(kline_list)
     chan_id = chan_manager.register(chan)
 
-    data = output.data(chan)
-    data['chan_id'] = chan_id
-
-    return data
-
-
-@blueprint.route('/chart/update/<chan_id>')
-def update(chan_id):
-    chan = chan_manager.get(chan_id)
-    if chan is None:
-        return []
-
-    # chan.append([])
-
-    data = output.data(chan)
-    data['chan_id'] = chan_id
-
-    return data
+    return {
+        'chan_id': chan_id,
+        'chan_data': chan_output.output(chan),
+        'kline_list': kline_list,
+    }

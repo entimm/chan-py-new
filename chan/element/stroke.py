@@ -2,7 +2,7 @@ from typing import Optional
 
 from chan.element.abs_stroke import AbsStroke
 from chan.element.bar_union import BarUnion
-from chan.const import FractalType, Direction
+from chan.chan_const import FractalType, Direction
 from logger import logger
 
 

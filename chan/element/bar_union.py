@@ -1,6 +1,6 @@
 from typing import List, Optional
 
-from chan.const import Direction, FractalType
+from chan.chan_const import Direction, FractalType
 from chan.element.abs_bar import AbsBar
 
 

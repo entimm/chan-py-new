@@ -1,6 +1,6 @@
 from chan import chan_config
 from chan.element.bar_union import BarUnion
-from chan.const import FractalType
+from chan.chan_const import FractalType
 
 
 class Fractal:

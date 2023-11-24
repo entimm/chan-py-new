@@ -3,7 +3,7 @@ import json
 from flask import render_template, Blueprint, request, url_for, redirect
 from numpy import bool_
 
-from chan import output
+from chan import chan_output
 from chan.chan import Chan
 from common.common import PeriodEnum
 from common.data import symbol_name_dict, gnbk_dict
@@ -35,13 +35,14 @@ def chart():
     chan = Chan()
     chan.load(kline_list)
 
-    data = output.data(chan)
+    data = chan_output.output(chan)
 
     template_var = {
         'symbol': symbol,
         'symbol_name': symbol_name,
         'period': period,
-        'data': json.dumps(data, default=lambda x: to_bool(x)),
+        'chan_data': json.dumps(data, default=lambda x: to_bool(x)),
+        'kline_list': json.dumps(kline_list),
         'period_list': {
             PeriodEnum.F1.name: '1分钟',
             PeriodEnum.F5.name: '5分钟',
