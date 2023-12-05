@@ -12,6 +12,10 @@ class AbsStroke(AbsBar):
     def len(self):
         return self._len
 
+    @len.setter
+    def len(self, value):
+        self._len = value
+
     @property
     def direction(self):
         return self._direction

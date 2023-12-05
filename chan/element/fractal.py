@@ -1,7 +1,7 @@
 from chan import chan_config
 from chan.element.bar_union import BarUnion
 from chan.chan_const import FractalType
-
+from logger import logger
 
 class Fractal:
     @staticmethod
@@ -19,12 +19,12 @@ class Fractal:
             return False
 
         if chan_config.stroke_check_break:
-            return not Fractal.check_break(fractal_start, fractal_end)
+            return not Fractal.check_end_break(fractal_start, fractal_end)
 
         return True
 
     @staticmethod
-    def check_break(fractal_start: BarUnion, fractal_end: BarUnion):
+    def check_end_break(fractal_start: BarUnion, fractal_end: BarUnion):
         """
         检查2个分型中间是否有k线破坏
         检查前面是否有因长度不够，而导致无法形成笔尾，然后后面的候选笔尾又无法higher_or_lower的
@@ -39,6 +39,21 @@ class Fractal:
             iter_bar_union = iter_bar_union.next
 
         return False
+
+    @staticmethod
+    def find_start_break(fractal_start: BarUnion, fractal_end: BarUnion):
+        result_fractal = fractal_start
+        iter_bar_union = fractal_start.next
+        while iter_bar_union.index <= fractal_end.index:
+            if fractal_start.fractal_type == FractalType.BOTTOM:
+                is_break = iter_bar_union.low < result_fractal.low
+            else:
+                is_break = iter_bar_union.high > result_fractal.high
+            if is_break:
+                result_fractal = iter_bar_union
+            iter_bar_union = iter_bar_union.next
+
+        return result_fractal.index > fractal_start.index, result_fractal
 
     @staticmethod
     def same_type_fractal_growing(fractal1: BarUnion, fractal2: BarUnion):

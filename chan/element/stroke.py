@@ -33,6 +33,8 @@ class Stroke(AbsStroke):
         self._direction = self.__cal_direction()
         logger.info(f'{self}设置笔首{cur_fractal}')
 
+        self.waiting_process = True
+
     def set_end(self, cur_fractal: Optional[BarUnion]):
         """
         设置笔尾

@@ -2,6 +2,10 @@
 stroke_check_break = True
 stroke_fix_sure = True
 
+# 极点强制
+force_stroke_vertex = False
+force_segment_vertex = False
+
 # 输出
 output_text = True
 output_fractal = True

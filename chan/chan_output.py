@@ -34,7 +34,7 @@ def output(chan):
         'direction': item.direction.name,
         'begin': {'time': get_time(item.stroke_list[0].fractal_start.fractal_index), 'value': item.stroke_list[0].fractal_start.fractal_value},
         'end': {'time': get_time(item.stroke_list[-1].fractal_end.fractal_index), 'value': item.stroke_list[-1].fractal_end.fractal_value},
-    } for item in chan.segment_manager.list if item.len >= 3]
+    } for item in chan.segment_manager.list if item.is_ok == True or item.len >= 3]
 
     data = {}
     if chan_config.output_union: data['bar_union_list'] = bar_union_list

@@ -51,7 +51,7 @@ class StrokeManager:
 
         # 条件OK则把第一笔的笔尾设置上
         if Fractal.check_valid_end(last_stroke.fractal_start, cur_fractal):
-            last_stroke.set_end(cur_fractal)
+            self.set_stroke_end(last_stroke, cur_fractal)
 
     def try_make_new_stroke(self, last_stroke: Stroke, cur_fractal: BarUnion):
         """
@@ -68,7 +68,7 @@ class StrokeManager:
                 # 处理higher_or_lower分型
                 # 笔顺势进行延伸
                 else:
-                    last_stroke.set_end(cur_fractal)
+                    self.set_stroke_end(last_stroke, cur_fractal)
             return
 
         # 如果当前不能落新笔
@@ -113,8 +113,21 @@ class StrokeManager:
         logger.info(f'{self.list[-1]}被丢弃')
         self.list.pop()
 
-        self.list[-1].set_end(cur_fractal)
+        self.set_stroke_end(self.list[-1], cur_fractal)
         self.list[-1].is_ok = False
 
     def waiting_process_list(self):
         return reversed([item for item in self.list[::-1] if item.waiting_process])
+
+    def set_stroke_end(self, stroke: Stroke, cur_fractal):
+        stroke.set_end(cur_fractal)
+        if not chan_config.force_stroke_vertex:
+            return
+        start_break, replace_start_fractal = Fractal.find_start_break(stroke.fractal_start, stroke.fractal_end)
+        if start_break:
+            logger.info(f'{stroke}start被重置{replace_start_fractal}')
+            if len(self.list) >= 2:
+                self.list[-2].set_end(replace_start_fractal)
+                stroke.set_start(replace_start_fractal)
+            else:
+                stroke.set_start(replace_start_fractal)

@@ -4,7 +4,7 @@ from chan.chan_const import SegmentStatus, Direction
 from chan.element.abs_stroke import AbsStroke
 from chan.element.segment import Segment
 from logger import logger
-
+from chan import chan_config
 
 class SegmentManager:
     def __init__(self):
@@ -63,6 +63,11 @@ class SegmentManager:
         # 实笔诞生
         if len(self.list) >= 2 and last_segment.len >= 3:
             self.list[-2].is_ok = True
+            if chan_config.force_segment_vertex:
+                start_break, replace_start_stroke = self.list[-2].find_start_break()
+                if (start_break):
+                    self.split_then_merge2(self.list[-2], self.list[-1], replace_start_stroke)
+
         # 线段长度变更后可能触发笔破坏
         self.handle_break(last_segment)
 
@@ -126,6 +131,31 @@ class SegmentManager:
         # 剩余的笔重新添加
         if len(in_stroke_list) > 0:
             for item in in_stroke_list:
+                self.add_stroke(item)
+
+    def split_then_merge2(self, pre_segment: Segment, last_segment: Segment, stroke: AbsStroke):
+        """
+        拆分后进行合并
+        """
+        logger.info(f'{pre_segment} split_then_merge2 {last_segment} 用 {stroke}')
+
+        pre_segment_stroke_list = list(pre_segment.stroke_list)
+
+        pre_segment.stroke_list = [item for item in pre_segment_stroke_list if item.index <= stroke.index]
+        pre_segment.len = len(pre_segment.stroke_list)
+        if (pre_segment.direction == Direction.UP) :
+            pre_segment.top_stroke = stroke
+        else:
+            pre_segment.bottom_stroke = stroke
+
+        pre_segment.status = SegmentStatus.FORCE
+
+        to_reprocess_list = [item for item in pre_segment_stroke_list if item.index > stroke.index] + last_segment.stroke_list
+
+        self.cancel_last_segment()
+        # 剩余的笔重新添加
+        if len(to_reprocess_list) > 0:
+            for item in to_reprocess_list:
                 self.add_stroke(item)
 
     def process_one_dropped(self, stroke: AbsStroke):

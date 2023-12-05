@@ -89,6 +89,9 @@ class Segment(AbsStroke):
         """
         检测是否可以继续新增笔
         """
+        if self.is_ok:
+            return False
+
         if self._len < 3:
             return True
 
@@ -212,3 +215,15 @@ class Segment(AbsStroke):
             return self.stroke_list[-1].high_fractal()
         else:
             return self.stroke_list[-1].low_fractal()
+
+    def find_start_break(self):
+        result_stroke = self.stroke_list[-1]
+        for item in self.stroke_list[:-1]:
+            if self.direction == Direction.UP:
+                is_break = item.high > result_stroke.high
+            else:
+                is_break = item.low < result_stroke.low
+            if is_break:
+                result_stroke = item
+
+        return result_stroke.index < self.stroke_list[-1].index, result_stroke
