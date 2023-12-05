@@ -7,7 +7,6 @@ force_stroke_vertex = False
 force_segment_vertex = False
 
 # 输出
-output_text = True
 output_fractal = True
 output_union = False
 output_stroke = True

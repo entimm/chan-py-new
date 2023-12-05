@@ -26,7 +26,6 @@
 <body>
 <div id="chart"></div>
 <script>
-    var output_text = true
     var chart = klinecharts.init('chart', {
         timezone: 'Asia/Shanghai',
         customApi: {
@@ -113,7 +112,6 @@
     fetch(`/chart/data`).then(response => response.json())
         .then(data => {
             chartDataList = data.kline_list.map(convertKlineData);
-            output_text = data.chan_data.output_text
             chart.applyNewData(chartDataList)
 
             chanId = data.chan_id

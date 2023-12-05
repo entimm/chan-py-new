@@ -42,6 +42,4 @@ def output(chan):
     if chan_config.output_stroke: data['stroke_list'] = stroke_list
     if chan_config.output_segment: data['segment_list'] = segment_list
 
-    data['output_text'] = chan_config.output_text
-
     return data
