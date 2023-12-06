@@ -62,9 +62,10 @@ class StrokeManager:
             if Fractal.same_type_fractal_growing(last_stroke.fractal_end, cur_fractal):
                 # 先判断是否有前面的关键分型，有就处理
                 if chan_config.stroke_fix_sure and last_stroke.stash_fractal is not None:
-                    self.cancel_last_stroke(last_stroke.stash_fractal)
-                    # 尝试生成下一笔
-                    self.try_make_new_stroke(self.list[-1], cur_fractal)
+                    if len(self.list) >= 2:
+                        self.cancel_last_stroke(last_stroke.stash_fractal)
+                        # 尝试生成下一笔
+                        self.try_make_new_stroke(self.list[-1], cur_fractal)
                 # 处理higher_or_lower分型
                 # 笔顺势进行延伸
                 else:
